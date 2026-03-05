@@ -8,8 +8,9 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
-  <script src="/_sdk/data_sdk.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
   <style>
         html, body { height: 100%; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -95,25 +96,22 @@
     </style>
   <style>body { box-sizing: border-box; }</style>
   <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
  </head>
- <body class="antialiased flex flex-col min-h-full w-full">
-  <!-- Navigation -->
+ <body class="antialiased flex flex-col min-h-full w-full"><!-- Navigation -->
   <nav class="fixed w-full top-0 z-50 glass-nav">
    <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
-    <div class="flex items-center gap-3">
-     <img src="https://nongki.ac.th/np2019/img/home/logo_np.gif" alt="Logo" class="w-12 h-12 object-contain" loading="lazy" onerror="this.style.opacity='0'">
-     <div class="flex flex-col">
-      <span class="text-lg font-bold nav-text leading-none">ระบบจองห้องประชุม/สถานที่</span> <span class="text-xs nav-text font-medium opacity-90">โรงเรียนหนองกี่พิทยาคม</span>
+    <div class="flex items-center gap-3"><img src="https://nongki.ac.th/np2019/img/home/logo_np.gif" alt="Logo" class="w-12 h-12 object-contain" loading="lazy" onerror="this.style.opacity='0'">
+     <div class="flex flex-col"><span class="text-lg font-bold nav-text leading-none">ระบบจองห้องประชุม/สถานที่</span> <span class="text-xs nav-text font-medium opacity-90">โรงเรียนหนองกี่พิทยาคม</span>
      </div>
     </div>
-    <div class="flex items-center gap-4">
-     <button onclick="openAdminLogin()" class="hidden md:flex items-center gap-2 text-white hover:text-yellow-300 font-bold text-sm px-4 py-2 rounded-xl hover:bg-white/10 transition-all border border-white/30"> <i class="fa-solid fa-user-shield"></i><span>สำหรับเจ้าหน้าที่</span> </button> <button onclick="openBookingModal()" class="submit-btn text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-2 transition-all hover:shadow-xl"> <i class="fa-solid fa-plus-circle"></i> <span>จองห้องประชุม</span> </button>
+    <div class="flex items-center gap-4"><button onclick="openAdminLogin()" class="hidden md:flex items-center gap-2 text-white hover:text-yellow-300 font-bold text-sm px-4 py-2 rounded-xl hover:bg-white/10 transition-all border border-white/30"> <i class="fa-solid fa-user-shield"></i><span>สำหรับเจ้าหน้าที่</span> </button> <button onclick="checkAuthAndOpenBooking()" class="submit-btn text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-2 transition-all hover:shadow-xl"> <i class="fa-solid fa-plus-circle"></i> <span>จองห้องประชุม</span> </button>
     </div>
    </div>
   </nav><!-- Main -->
   <main class="flex-grow pb-12 px-4 sm:px-6 lg:px-8 bg-white pt-32 md:pt-36 w-full overflow-auto">
-   <div class="max-w-7xl mx-auto w-full">
-    <!-- Hero -->
+   <div class="max-w-7xl mx-auto w-full"><!-- Hero -->
     <div class="header-section">
      <h1 class="text-3xl md:text-5xl font-black text-blue-900 mb-6 tracking-tight">ระบบจองห้องประชุม/สถานที่ <span class="text-blue-600">โรงเรียนหนองกี่พิทยาคม</span></h1>
      <p class="main-desc text-slate-700 max-w-2xl text-sm md:text-base leading-relaxed">บริหารจัดการการใช้ห้องประชุมและสถานที่อื่นๆ อย่างมีระบบ โปร่งใส และมีประสิทธิภาพ รองรับทุกกิจกรรมของโรงเรียน สามารถจองได้รายชั่วโมง (06:00–22:00) หรือเหมาทั้งวัน</p>
@@ -122,10 +120,10 @@
      <h2 class="text-3xl md:text-4xl font-black text-blue-900 mb-12 text-center">ขั้นตอนการจองห้องประชุม/สถานที่</h2>
      <div class="relative">
       <div class="vertical-line hidden md:block"></div>
-      <div class="space-y-8">
-       <button onclick="openBookingModal()" type="button" class="step-card step-card-button p-8 rounded-2xl relative group md:ml-12 fade-in-up w-full text-left">
+      <div class="space-y-8"><button onclick="checkAuthAndOpenBooking()" type="button" class="step-card step-card-button p-8 rounded-2xl relative group md:ml-12 fade-in-up w-full text-left">
         <div class="flex gap-6 items-start">
-         <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0"><i class="fa-solid fa-pen-to-square text-xl"></i>
+         <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0">
+          <i class="fa-solid fa-pen-to-square text-xl"></i>
          </div>
          <div class="flex-grow">
           <h3 class="font-black text-blue-900 mb-2 text-lg">ยื่นคำขอจองออนไลน์</h3>
@@ -133,7 +131,8 @@
          </div>
         </div></button> <button onclick="document.getElementById('table-section').scrollIntoView({behavior:'smooth'})" type="button" class="step-card step-card-button p-8 rounded-2xl relative group md:ml-12 fade-in-up w-full text-left">
         <div class="flex gap-6 items-start">
-         <div class="w-12 h-12 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-xl flex items-center justify-center text-yellow-600 shrink-0"><i class="fa-solid fa-calendar-check text-xl"></i>
+         <div class="w-12 h-12 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-xl flex items-center justify-center text-yellow-600 shrink-0">
+          <i class="fa-solid fa-calendar-check text-xl"></i>
          </div>
          <div class="flex-grow">
           <h3 class="font-black text-blue-900 mb-2 text-lg">ตรวจสอบตารางการจอง</h3>
@@ -142,7 +141,8 @@
         </div></button>
        <div class="step-card p-8 rounded-2xl relative group md:ml-12 fade-in-up">
         <div class="flex gap-6 items-start">
-         <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center text-blue-700 shrink-0"><i class="fa-solid fa-circle-check text-xl"></i>
+         <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center text-blue-700 shrink-0">
+          <i class="fa-solid fa-circle-check text-xl"></i>
          </div>
          <div class="flex-grow">
           <h3 class="font-black text-blue-900 mb-2 text-lg">รอการอนุมัติจากเจ้าหน้าที่</h3>
@@ -152,28 +152,26 @@
        </div>
       </div>
      </div>
-     <div class="mt-8 md:hidden text-center">
-      <button onclick="openAdminLogin()" class="text-blue-900 font-bold text-sm underline flex items-center justify-center gap-1 hover:text-blue-600 mx-auto"> <i class="fa-solid fa-lock"></i> เข้าสู่หน้าจัดการเจ้าหน้าที่ </button>
+     <div class="mt-8 md:hidden text-center"><button onclick="openAdminLogin()" class="text-blue-900 font-bold text-sm underline flex items-center justify-center gap-1 hover:text-blue-600 mx-auto"> <i class="fa-solid fa-lock"></i> เข้าสู่หน้าจัดการเจ้าหน้าที่ </button>
      </div>
     </div><!-- Chart + Sidebar --> <!-- Chart + Sidebar -->
     <div class="grid lg:grid-cols-5 gap-8 mt-12">
-     <div class="lg:col-span-2 space-y-4 fade-in-up">
-      <!-- Calendar -->
+     <div class="lg:col-span-2 space-y-4 fade-in-up"><!-- Calendar -->
       <div class="glass-card rounded-2xl p-6 shadow-lg">
        <h2 class="text-lg font-black text-blue-900 mb-4 section-title pb-3 flex items-center gap-2">
-        <div class="w-7 h-7 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center"><i class="fa-solid fa-calendar text-white text-sm"></i>
+        <div class="w-7 h-7 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+         <i class="fa-solid fa-calendar text-white text-sm"></i>
         </div> ปฏิทินการจอง</h2>
-       <div class="flex items-center justify-between mb-4">
-        <button onclick="prevMonth()" class="w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-600 hover:text-white text-blue-700 flex items-center justify-center text-sm transition-all"><i class="fas fa-chevron-left"></i></button> <span id="cal-title" class="text-sm font-black text-blue-900"></span> <button onclick="nextMonth()" class="w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-600 hover:text-white text-blue-700 flex items-center justify-center text-sm transition-all"><i class="fas fa-chevron-right"></i></button>
+       <div class="flex items-center justify-between mb-4"><button onclick="prevMonth()" class="w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-600 hover:text-white text-blue-700 flex items-center justify-center text-sm transition-all"><i class="fas fa-chevron-left"></i></button> <span id="cal-title" class="text-sm font-black text-blue-900"></span> <button onclick="nextMonth()" class="w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-600 hover:text-white text-blue-700 flex items-center justify-center text-sm transition-all"><i class="fas fa-chevron-right"></i></button>
        </div>
        <div class="grid grid-cols-7 gap-1" id="calendar"></div>
-       <div class="flex flex-col gap-2 mt-4 text-xs text-slate-600">
-        <span class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-blue-600 inline-block"></span>วันนี้</span> <span class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-yellow-400 inline-block"></span>มีการจอง</span>
+       <div class="flex flex-col gap-2 mt-4 text-xs text-slate-600"><span class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-blue-600 inline-block"></span>วันนี้</span> <span class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-yellow-400 inline-block"></span>มีการจอง</span>
        </div>
       </div><!-- Room Status -->
       <div class="glass-card rounded-2xl p-4 shadow-lg">
        <h2 class="text-sm font-black text-blue-900 mb-3 section-title pb-2 flex items-center gap-2">
-        <div class="w-6 h-6 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center"><i class="fa-solid fa-door-open text-white text-xs"></i>
+        <div class="w-6 h-6 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+         <i class="fa-solid fa-door-open text-white text-xs"></i>
         </div> สถานะห้องประชุม</h2>
        <div class="space-y-2" id="room-list"></div>
       </div>
@@ -181,7 +179,8 @@
      <div class="lg:col-span-3 fade-in-up">
       <div class="glass-card rounded-2xl p-8 shadow-lg h-full flex flex-col">
        <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center"><i class="fa-solid fa-door-open text-white"></i>
+        <div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center">
+         <i class="fa-solid fa-door-open text-white"></i>
         </div>
         <h2 class="text-2xl font-black text-blue-900 section-title flex-grow">การจองวันนี้</h2>
        </div>
@@ -192,11 +191,11 @@
     <div class="glass-card rounded-2xl p-8 shadow-lg mt-8" id="table-section">
      <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
       <h2 class="text-2xl font-black text-blue-900 flex items-center gap-3 section-title flex-grow">
-       <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center"><i class="fa-solid fa-table-list text-white"></i>
-       </div> ตารางการจองห้องประชุม</h2><button onclick="openBookingModal()" class="submit-btn text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-2"> <i class="fa-solid fa-plus"></i> จองใหม่ </button>
+       <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+        <i class="fa-solid fa-table-list text-white"></i>
+       </div> ตารางการจองห้องประชุม</h2><button onclick="checkAuthAndOpenBooking()" class="submit-btn text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-2"> <i class="fa-solid fa-plus"></i> จองใหม่ </button>
      </div>
-     <div class="flex flex-wrap gap-3 mb-6">
-      <input type="date" id="filter-date" onchange="filterTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <select id="filter-room" onchange="filterTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <option value="">-- ทุกห้อง --</option> <option>หอประชุมพุทธรักษา</option> <option>ห้องประชุมชวนชม</option> <option>ห้องประชุมราชพฤกษ์</option> <option>ห้องประชุมปาริชาติ</option> <option>โดมอเนกประสงค์</option> <option>สนามฟุตบอล</option> </select> <select id="filter-status" onchange="filterTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <option value="">-- ทุกสถานะ --</option> <option>รอการอนุมัติ</option> <option>อนุมัติแล้ว</option> <option>ยกเลิก</option> </select> <button onclick="clearFilter()" class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold px-4 py-2.5 rounded-xl text-sm transition-all border border-blue-300 flex items-center gap-2"> <i class="fas fa-redo"></i> ล้างตัวกรอง </button>
+     <div class="flex flex-wrap gap-3 mb-6"><input type="date" id="filter-date" onchange="filterTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <select id="filter-room" onchange="filterTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <option value="">-- ทุกห้อง --</option> <option>หอประชุมพุทธรักษา</option> <option>ห้องประชุมชวนชม</option> <option>ห้องประชุมราชพฤกษ์</option> <option>ห้องประชุมปาริชาติ</option> <option>โดมอเนกประสงค์</option> <option>สนามฟุตบอล</option> </select> <select id="filter-status" onchange="filterTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <option value="">-- ทุกสถานะ --</option> <option>รอการอนุมัติ</option> <option>อนุมัติแล้ว</option> <option>ยกเลิก</option> </select> <button onclick="clearFilter()" class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold px-4 py-2.5 rounded-xl text-sm transition-all border border-blue-300 flex items-center gap-2"> <i class="fas fa-redo"></i> ล้างตัวกรอง </button>
      </div>
      <div class="overflow-x-auto">
       <table class="w-full border-collapse text-sm">
@@ -221,59 +220,64 @@
       <canvas id="bookingChart"></canvas>
      </div>
      <div id="room-stats-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div><!-- Google Login Modal -->
+    <div id="googleLoginModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+     <div class="flex items-center justify-center min-h-full p-4">
+      <div class="fixed inset-0 bg-blue-900/50 backdrop-blur-sm" onclick="closeGoogleLogin()"></div>
+      <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden modal-content border-2 border-blue-200">
+       <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-8 py-6 flex justify-between items-center text-white">
+        <div class="flex items-center gap-3"><i class="fa-solid fa-user-circle text-2xl"></i>
+         <h3 class="font-black text-xl">เข้าสู่ระบบ</h3>
+        </div><button onclick="closeGoogleLogin()" class="hover:bg-white/20 p-2 rounded-full transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+       </div>
+       <div class="p-8 bg-white space-y-4">
+        <div class="text-center mb-6"><i class="fa-solid fa-lock text-4xl text-blue-600 mb-2 block"></i>
+         <p class="text-sm text-slate-600 font-bold">กรุณาเข้าสู่ระบบเพื่อทำการจอง</p>
+        </div><button onclick="googleLogin()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-black px-6 py-3 rounded-xl flex items-center justify-center gap-3 shadow-lg transition-all"> <i class="fab fa-google text-lg"></i> <span>เข้าสู่ระบบด้วย Google</span> </button> <button onclick="guestAccess()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all border border-slate-300"> <i class="fa-solid fa-user"></i> <span>ดำเนินการต่อโดยไม่ลงชื่อ</span> </button>
+       </div>
+      </div>
+     </div>
     </div><!-- ===== BOOKING MODAL ===== -->
     <div id="bookingModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
      <div class="flex items-center justify-center min-h-full p-4">
       <div class="fixed inset-0 bg-blue-900/50 backdrop-blur-sm" onclick="closeBookingModal()"></div>
       <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden modal-content border-2 border-blue-200">
        <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-8 py-6 flex justify-between items-center text-white">
-        <div class="flex items-center gap-3">
-         <i class="fa-solid fa-calendar-plus text-2xl text-yellow-300"></i>
+        <div class="flex items-center gap-3"><i class="fa-solid fa-calendar-plus text-2xl text-yellow-300"></i>
          <h3 class="font-black text-xl">คำขอจองห้องประชุม/สถานที่</h3>
         </div><button onclick="closeBookingModal()" class="hover:bg-white/20 p-2 rounded-full transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
        </div>
        <div class="p-8 bg-white max-h-[80vh] overflow-y-auto">
-        <form id="bookingForm" class="space-y-5">
-         <input type="hidden" id="bookingIdInput"> <!-- เลขที่ + ห้อง -->
+        <form id="bookingForm" class="space-y-5"><input type="hidden" id="bookingIdInput"> <!-- เลขที่ + ห้อง -->
          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">เลขที่คำร้อง</label> <input type="text" id="bookingIdDisplay" disabled class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm bg-blue-50 text-blue-900 font-bold cursor-not-allowed outline-none">
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">เลขที่คำร้อง</label> <input type="text" id="bookingIdDisplay" disabled class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm bg-blue-50 text-blue-900 font-bold cursor-not-allowed outline-none">
           </div>
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">ห้องประชุม/สถานที่ *</label> <select id="f-room" required class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900"> <option value="">-- กรุณาเลือกห้อง --</option> <option>หอประชุมพุทธรักษา</option> <option>ห้องประชุมชวนชม</option> <option>ห้องประชุมราชพฤกษ์</option> <option>ห้องประชุมปาริชาติ</option> <option>โดมอเนกประสงค์</option> <option>สนามฟุตบอล</option> </select>
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">ห้องประชุม/สถานที่ *</label> <select id="f-room" required class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900"> <option value="">-- กรุณาเลือกห้อง --</option> <option>หอประชุมพุทธรักษา</option> <option>ห้องประชุมชวนชม</option> <option>ห้องประชุมราชพฤกษ์</option> <option>ห้องประชุมปาริชาติ</option> <option>โดมอเนกประสงค์</option> <option>สนามฟุตบอล</option> </select>
           </div>
          </div><!-- ชื่อ + เบอร์ -->
          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">ชื่อ-นามสกุล ผู้จอง *</label> <input type="text" id="f-name" required placeholder="เช่น นายสมชาย ใจดี" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">ชื่อ-นามสกุล ผู้จอง *</label> <input type="text" id="f-name" required placeholder="เช่น นายสมชาย ใจดี" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
           </div>
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">เบอร์โทรศัพท์ *</label> <input type="tel" id="f-tel" required placeholder="08x-xxx-xxxx" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">เบอร์โทรศัพท์ *</label> <input type="tel" id="f-tel" required placeholder="08x-xxx-xxxx" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
           </div>
          </div><!-- ฝ่าย + วันที่ -->
          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">หน่วยงาน / ฝ่าย</label> <input type="text" id="f-dept" placeholder="เช่น ฝ่ายวิชาการ" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">หน่วยงาน / ฝ่าย</label> <input type="text" id="f-dept" placeholder="เช่น ฝ่ายวิชาการ" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
           </div>
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">วันที่จอง *</label> <input type="date" id="f-date" required class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">วันที่จอง *</label> <input type="date" id="f-date" required class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
           </div>
          </div><!-- ประเภทเวลา -->
-         <div class="space-y-3">
-          <label class="text-sm font-black text-blue-900 ml-1">ช่วงเวลา *</label>
-          <div class="flex gap-3">
-           <button type="button" id="btn-hourly" onclick="setTimeType('hourly')" class="time-type-btn active flex-1 py-3 rounded-xl border-2 font-black text-sm flex items-center justify-center gap-2"> <i class="fas fa-clock"></i> รายชั่วโมง </button> <button type="button" id="btn-allday" onclick="setTimeType('allday')" class="time-type-btn flex-1 py-3 rounded-xl border-2 font-black text-sm flex items-center justify-center gap-2"> <i class="fas fa-sun"></i> ทั้งวัน (06:00–22:00) </button>
+         <div class="space-y-3"><label class="text-sm font-black text-blue-900 ml-1">ช่วงเวลา *</label>
+          <div class="flex gap-3"><button type="button" id="btn-hourly" onclick="setTimeType('hourly')" class="time-type-btn active flex-1 py-3 rounded-xl border-2 font-black text-sm flex items-center justify-center gap-2"> <i class="fas fa-clock"></i> รายชั่วโมง </button> <button type="button" id="btn-allday" onclick="setTimeType('allday')" class="time-type-btn flex-1 py-3 rounded-xl border-2 font-black text-sm flex items-center justify-center gap-2"> <i class="fas fa-sun"></i> ทั้งวัน (06:00–22:00) </button>
           </div><!-- รายชั่วโมง -->
           <div id="hourly-section">
            <p class="text-xs text-slate-500 mb-2 ml-1">คลิกเลือกชั่วโมงเริ่มต้น แล้วคลิกชั่วโมงสิ้นสุด (หรือคลิกเดียวสำหรับ 1 ชั่วโมง)</p>
            <div class="grid grid-cols-8 gap-1" id="hour-grid"></div>
-           <div id="time-summary" class="mt-2 text-sm font-bold text-blue-700 text-center hidden">
-            <i class="fas fa-clock mr-1"></i> <span id="time-summary-text"></span>
+           <div id="time-summary" class="mt-2 text-sm font-bold text-blue-700 text-center hidden"><i class="fas fa-clock mr-1"></i> <span id="time-summary-text"></span>
            </div>
           </div><!-- ทั้งวัน -->
           <div id="allday-section" class="hidden">
-           <div class="p-4 bg-blue-50 rounded-xl border-2 border-blue-200 flex items-center gap-3">
-            <i class="fas fa-sun text-yellow-500 text-2xl"></i>
+           <div class="p-4 bg-blue-50 rounded-xl border-2 border-blue-200 flex items-center gap-3"><i class="fas fa-sun text-yellow-500 text-2xl"></i>
             <div>
              <p class="font-black text-blue-900">จองทั้งวัน</p>
              <p class="text-xs text-slate-500">06:00 – 22:00 น.</p>
@@ -282,18 +286,16 @@
           </div>
          </div><!-- จำนวน + วัตถุประสงค์ -->
          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">จำนวนผู้เข้าร่วม</label> <input type="number" id="f-people" placeholder="ระบุจำนวน" min="1" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">จำนวนผู้เข้าร่วม</label> <input type="number" id="f-people" placeholder="ระบุจำนวน" min="1" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
           </div>
          </div>
-         <div class="space-y-2">
-          <label class="text-sm font-black text-blue-900 ml-1">วัตถุประสงค์ *</label> <textarea id="f-purpose" required placeholder="เช่น ประชุมผู้ปกครอง
+         <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">วัตถุประสงค์ *</label> <textarea id="f-purpose" required placeholder="เช่น ประชุมผู้ปกครอง
 อบรมครู
 กิจกรรมพิเศษ" rows="3" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white resize-none"></textarea>
          </div>
-         <div class="space-y-3">
-          <label class="text-sm font-black text-blue-900 ml-1">อุปกรณ์ที่ต้องใช้</label>
-          <div class="space-y-2 bg-blue-50 p-4 rounded-xl border-2 border-blue-200"><label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="ชุดเครื่องเสียง" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">ชุดเครื่องเสียง</span></label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="เครื่องฉายโปรเจคเตอร์" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">เครื่องฉายโปรเจคเตอร์</span></label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="สัญญาณเสียง" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">สัญญาณเสียงเพื่อต่อพ่วงกับอุปกรณ์</span></label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="Apple TV" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">Apple TV</span></label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="โต๊ะ" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">โต๊ะ (ระบุจำนวน)</span> <input type="number" id="f-table-qty" placeholder="จำนวน" min="1" class="w-16 border border-blue-300 p-1.5 rounded text-xs text-center outline-none focus:ring-2 focus:ring-blue-600"> </label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="เก้าอี้" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">เก้าอี้ (ระบุจำนวน)</span> <input type="number" id="f-chair-qty" placeholder="จำนวน" min="1" class="w-16 border border-blue-300 p-1.5 rounded text-xs text-center outline-none focus:ring-2 focus:ring-blue-600"> </label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="โซฟารับแขก" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">ชุดโซฟารับแขกและโต๊ะกลาง (ระบุจำนวน)</span> <input type="number" id="f-sofa-qty" placeholder="จำนวน" min="1" class="w-16 border border-blue-300 p-1.5 rounded text-xs text-center outline-none focus:ring-2 focus:ring-blue-600"> </label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="ถ่ายภาพ" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">ถ่ายภาพ</span></label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="อื่นๆ" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">อื่นๆ</span> <input type="text" id="f-other-equip" placeholder="โปรดระบุ" class="flex-1 border border-blue-300 p-1.5 rounded text-xs outline-none focus:ring-2 focus:ring-blue-600"> </label>
+         <div class="space-y-3"><label class="text-sm font-black text-blue-900 ml-1">อุปกรณ์ที่ต้องใช้</label>
+          <div class="space-y-2 bg-blue-50 p-4 rounded-xl border-2 border-blue-200">
+           <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="ชุดเครื่องเสียง" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">ชุดเครื่องเสียง</span></label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="เครื่องฉายโปรเจคเตอร์" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">เครื่องฉายโปรเจคเตอร์</span></label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="สัญญาณเสียง" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">สัญญาณเสียงเพื่อต่อพ่วงกับอุปกรณ์</span></label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="Apple TV" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">Apple TV</span></label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="โต๊ะ" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">โต๊ะ (ระบุจำนวน)</span> <input type="number" id="f-table-qty" placeholder="จำนวน" min="1" class="w-16 border border-blue-300 p-1.5 rounded text-xs text-center outline-none focus:ring-2 focus:ring-blue-600"> </label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="เก้าอี้" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">เก้าอี้ (ระบุจำนวน)</span> <input type="number" id="f-chair-qty" placeholder="จำนวน" min="1" class="w-16 border border-blue-300 p-1.5 rounded text-xs text-center outline-none focus:ring-2 focus:ring-blue-600"> </label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="โซฟารับแขก" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">ชุดโซฟารับแขกและโต๊ะกลาง (ระบุจำนวน)</span> <input type="number" id="f-sofa-qty" placeholder="จำนวน" min="1" class="w-16 border border-blue-300 p-1.5 rounded text-xs text-center outline-none focus:ring-2 focus:ring-blue-600"> </label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="ถ่ายภาพ" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">ถ่ายภาพ</span></label> <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" name="equipment" value="อื่นๆ" class="equipment-checkbox w-4 h-4"> <span class="text-sm text-blue-900">อื่นๆ</span> <input type="text" id="f-other-equip" placeholder="โปรดระบุ" class="flex-1 border border-blue-300 p-1.5 rounded text-xs outline-none focus:ring-2 focus:ring-blue-600"> </label>
           </div>
          </div><button type="submit" id="submitBtn" class="submit-btn w-full text-white py-4 rounded-xl font-black flex items-center justify-center gap-3 shadow-xl"> <span id="btnLoader" class="loader hidden"></span> <span id="btnText">ยืนยันการส่งคำร้อง</span> </button>
         </form>
@@ -306,8 +308,7 @@
       <div class="fixed inset-0 bg-blue-900/50 backdrop-blur-sm" onclick="closeAdminLogin()"></div>
       <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden modal-content border-2 border-blue-200">
        <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-8 py-6 flex justify-between items-center text-white">
-        <div class="flex items-center gap-3">
-         <i class="fa-solid fa-lock text-2xl"></i>
+        <div class="flex items-center gap-3"><i class="fa-solid fa-lock text-2xl"></i>
          <h3 class="font-black text-xl">เข้าสู่ระบบเจ้าหน้าที่</h3>
         </div><button onclick="closeAdminLogin()" class="hover:bg-white/20 p-2 rounded-full transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
        </div>
@@ -316,11 +317,9 @@
          <p class="text-sm text-blue-800 font-bold"><i class="fa-solid fa-key mr-2"></i>กรุณากรอกรหัสผ่านเพื่อเข้าสู่ระบบเจ้าหน้าที่</p>
         </div>
         <form class="space-y-4" onsubmit="handleAdminLogin(event)">
-         <div class="space-y-2">
-          <label class="text-sm font-black text-blue-900 ml-1">รหัสผ่าน</label> <input type="password" id="adminPassword" placeholder="กรอกรหัสผ่าน..." required class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+         <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">รหัสผ่าน</label> <input type="password" id="adminPassword" placeholder="กรอกรหัสผ่าน..." required class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
          </div>
-         <div id="passwordError" class="p-3 bg-red-50 border-2 border-red-300 rounded-xl text-red-700 text-sm font-bold hidden">
-          <i class="fa-solid fa-exclamation-circle mr-2"></i>รหัสผ่านไม่ถูกต้อง
+         <div id="passwordError" class="p-3 bg-red-50 border-2 border-red-300 rounded-xl text-red-700 text-sm font-bold hidden"><i class="fa-solid fa-exclamation-circle mr-2"></i>รหัสผ่านไม่ถูกต้อง
          </div><button type="submit" class="submit-btn w-full text-white py-3 rounded-xl font-black flex items-center justify-center gap-2 shadow-lg"> <i class="fa-solid fa-arrow-right"></i><span>เข้าสู่ระบบ</span> </button>
         </form>
         <p class="text-center text-xs text-slate-500 mt-6">หากลืมรหัสผ่าน โปรดติดต่อครูหัวหน้าฝ่ายบริหาร</p>
@@ -333,8 +332,7 @@
       <div class="fixed inset-0 bg-blue-900/50 backdrop-blur-sm" onclick="closeAdminLogin()"></div>
       <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden modal-content border-2 border-blue-200">
        <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-8 py-6 flex justify-between items-center text-white">
-        <div class="flex items-center gap-3">
-         <i class="fa-solid fa-lock text-2xl"></i>
+        <div class="flex items-center gap-3"><i class="fa-solid fa-lock text-2xl"></i>
          <h3 class="font-black text-xl">เข้าสู่ระบบเจ้าหน้าที่</h3>
         </div><button onclick="closeAdminLogin()" class="hover:bg-white/20 p-2 rounded-full transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
        </div>
@@ -343,11 +341,9 @@
          <p class="text-sm text-blue-800 font-bold"><i class="fa-solid fa-key mr-2"></i>กรุณากรอกรหัสผ่านเพื่อเข้าสู่ระบบเจ้าหน้าที่</p>
         </div>
         <form class="space-y-4" onsubmit="handleAdminLogin(event)">
-         <div class="space-y-2">
-          <label class="text-sm font-black text-blue-900 ml-1">รหัสผ่าน</label> <input type="password" id="adminPassword" placeholder="กรอกรหัสผ่าน..." required class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+         <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">รหัสผ่าน</label> <input type="password" id="adminPassword" placeholder="กรอกรหัสผ่าน..." required class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
          </div>
-         <div id="passwordError" class="p-3 bg-red-50 border-2 border-red-300 rounded-xl text-red-700 text-sm font-bold hidden">
-          <i class="fa-solid fa-exclamation-circle mr-2"></i>รหัสผ่านไม่ถูกต้อง
+         <div id="passwordError" class="p-3 bg-red-50 border-2 border-red-300 rounded-xl text-red-700 text-sm font-bold hidden"><i class="fa-solid fa-exclamation-circle mr-2"></i>รหัสผ่านไม่ถูกต้อง
          </div><button type="submit" class="submit-btn w-full text-white py-3 rounded-xl font-black flex items-center justify-center gap-2 shadow-lg"> <i class="fa-solid fa-arrow-right"></i><span>เข้าสู่ระบบ</span> </button>
         </form>
         <p class="text-center text-xs text-slate-500 mt-6">หากลืมรหัสผ่าน โปรดติดต่อครูหัวหน้าฝ่ายบริหาร</p>
@@ -360,13 +356,11 @@
       <div class="fixed inset-0 bg-blue-900/50 backdrop-blur-sm" onclick="closeAdminPanel()"></div>
       <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-6xl overflow-hidden modal-content border-2 border-blue-200 max-h-[90vh]">
        <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-8 py-6 flex justify-between items-center text-white sticky top-0 z-10">
-        <div class="flex items-center gap-3">
-         <i class="fa-solid fa-user-shield text-2xl text-yellow-300"></i>
+        <div class="flex items-center gap-3"><i class="fa-solid fa-user-shield text-2xl text-yellow-300"></i>
          <h3 class="font-black text-xl">หน้าจัดการเจ้าหน้าที่</h3>
         </div><button onclick="closeAdminPanel()" class="hover:bg-white/20 p-2 rounded-full transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
        </div>
-       <div class="p-8 bg-white overflow-y-auto" style="max-height: calc(90vh - 80px);">
-        <!-- Summary Cards -->
+       <div class="p-8 bg-white overflow-y-auto" style="max-height: calc(90vh - 80px);"><!-- Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
          <div class="bg-gradient-to-br from-blue-50 to-blue-25 rounded-xl border-2 border-blue-200 p-4">
           <p class="text-xs text-slate-500 font-bold mb-1">รวมทั้งหมด</p>
@@ -385,8 +379,7 @@
           <p id="admin-cancelled" class="text-3xl font-black text-red-700">0</p>
          </div>
         </div><!-- Filters -->
-        <div class="flex flex-wrap gap-3 mb-6 pb-6 border-b-2 border-blue-200">
-         <select id="admin-filter-status" onchange="filterAdminTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <option value="">-- ทั้งหมด --</option> <option value="รอการอนุมัติ">รอการอนุมัติ</option> <option value="อนุมัติแล้ว">อนุมัติแล้ว</option> <option value="ยกเลิก">ยกเลิก</option> </select> <select id="admin-filter-room" onchange="filterAdminTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <option value="">-- ทุกห้อง --</option> <option>หอประชุมพุทธรักษา</option> <option>ห้องประชุมชวนชม</option> <option>ห้องประชุมราชพฤกษ์</option> <option>ห้องประชุมปาริชาติ</option> <option>โดมอเนกประสงค์</option> <option>สนามฟุตบอล</option> </select> <input type="date" id="admin-filter-date" onchange="filterAdminTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <button onclick="clearAdminFilter()" class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold px-4 py-2.5 rounded-xl text-sm transition-all border border-blue-300 flex items-center gap-2"> <i class="fas fa-redo"></i> ล้างตัวกรอง </button>
+        <div class="flex flex-wrap gap-3 mb-6 pb-6 border-b-2 border-blue-200"><select id="admin-filter-status" onchange="filterAdminTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <option value="">-- ทั้งหมด --</option> <option value="รอการอนุมัติ">รอการอนุมัติ</option> <option value="อนุมัติแล้ว">อนุมัติแล้ว</option> <option value="ยกเลิก">ยกเลิก</option> </select> <select id="admin-filter-room" onchange="filterAdminTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <option value="">-- ทุกห้อง --</option> <option>หอประชุมพุทธรักษา</option> <option>ห้องประชุมชวนชม</option> <option>ห้องประชุมราชพฤกษ์</option> <option>ห้องประชุมปาริชาติ</option> <option>โดมอเนกประสงค์</option> <option>สนามฟุตบอล</option> </select> <input type="date" id="admin-filter-date" onchange="filterAdminTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <button onclick="clearAdminFilter()" class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold px-4 py-2.5 rounded-xl text-sm transition-all border border-blue-300 flex items-center gap-2"> <i class="fas fa-redo"></i> ล้างตัวกรอง </button>
         </div><!-- Bookings Table -->
         <div class="overflow-x-auto">
          <table class="w-full border-collapse text-sm">
@@ -414,8 +407,7 @@
       <div class="fixed inset-0 bg-blue-900/50 backdrop-blur-sm" onclick="closeStatusUpdate()"></div>
       <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden modal-content border-2 border-blue-200">
        <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-8 py-6 flex justify-between items-center text-white">
-        <div class="flex items-center gap-3">
-         <i class="fa-solid fa-check-circle text-2xl text-yellow-300"></i>
+        <div class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-2xl text-yellow-300"></i>
          <h3 class="font-black text-xl">อัปเดตสถานะ</h3>
         </div><button onclick="closeStatusUpdate()" class="hover:bg-white/20 p-2 rounded-full transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
        </div>
@@ -424,10 +416,8 @@
          <p class="text-xs text-slate-500 font-bold mb-1">รายการ</p>
          <p id="status-update-info" class="text-sm font-black text-blue-900">--</p>
         </div>
-        <div class="space-y-3">
-         <label class="text-sm font-black text-blue-900 ml-1">เปลี่ยนสถานะเป็น</label>
-         <div class="space-y-2">
-          <button type="button" onclick="updateBookingStatus('อนุมัติแล้ว')" class="w-full bg-green-100 hover:bg-green-200 text-green-700 font-black px-4 py-3 rounded-xl text-sm transition-all border-2 border-green-300 flex items-center justify-center gap-2"> <i class="fas fa-check-circle"></i> อนุมัติแล้ว </button> <button type="button" onclick="updateBookingStatus('รอการอนุมัติ')" class="w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-black px-4 py-3 rounded-xl text-sm transition-all border-2 border-yellow-300 flex items-center justify-center gap-2"> <i class="fas fa-hourglass-half"></i> รอการอนุมัติ </button> <button type="button" onclick="updateBookingStatus('ยกเลิก')" class="w-full bg-red-100 hover:bg-red-200 text-red-700 font-black px-4 py-3 rounded-xl text-sm transition-all border-2 border-red-300 flex items-center justify-center gap-2"> <i class="fas fa-times-circle"></i> ยกเลิก </button>
+        <div class="space-y-3"><label class="text-sm font-black text-blue-900 ml-1">เปลี่ยนสถานะเป็น</label>
+         <div class="space-y-2"><button type="button" onclick="updateBookingStatus('อนุมัติแล้ว')" class="w-full bg-green-100 hover:bg-green-200 text-green-700 font-black px-4 py-3 rounded-xl text-sm transition-all border-2 border-green-300 flex items-center justify-center gap-2"> <i class="fas fa-check-circle"></i> อนุมัติแล้ว </button> <button type="button" onclick="updateBookingStatus('รอการอนุมัติ')" class="w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-black px-4 py-3 rounded-xl text-sm transition-all border-2 border-yellow-300 flex items-center justify-center gap-2"> <i class="fas fa-hourglass-half"></i> รอการอนุมัติ </button> <button type="button" onclick="updateBookingStatus('ยกเลิก')" class="w-full bg-red-100 hover:bg-red-200 text-red-700 font-black px-4 py-3 rounded-xl text-sm transition-all border-2 border-red-300 flex items-center justify-center gap-2"> <i class="fas fa-times-circle"></i> ยกเลิก </button>
          </div>
         </div>
        </div>
@@ -439,60 +429,45 @@
       <div class="fixed inset-0 bg-blue-900/50 backdrop-blur-sm" onclick="closeBookingDetailsModal()"></div>
       <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden modal-content border-2 border-blue-200 max-h-[90vh]">
        <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-8 py-6 flex justify-between items-center text-white sticky top-0 z-10">
-        <div class="flex items-center gap-3">
-         <i class="fa-solid fa-edit text-2xl text-yellow-300"></i>
+        <div class="flex items-center gap-3"><i class="fa-solid fa-edit text-2xl text-yellow-300"></i>
          <h3 class="font-black text-xl">แก้ไขรายละเอียดการจอง</h3>
         </div><button onclick="closeBookingDetailsModal()" class="hover:bg-white/20 p-2 rounded-full transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
        </div>
        <div class="p-8 bg-white overflow-y-auto" style="max-height: calc(90vh - 80px);">
-        <form id="bookingDetailsForm" class="space-y-5">
-         <!-- เลขที่ + ห้อง -->
+        <form id="bookingDetailsForm" class="space-y-5"><!-- เลขที่ + ห้อง -->
          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">เลขที่คำร้อง</label> <input type="text" id="detail-booking-id" disabled class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm bg-blue-50 text-blue-900 font-bold cursor-not-allowed outline-none">
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">เลขที่คำร้อง</label> <input type="text" id="detail-booking-id" disabled class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm bg-blue-50 text-blue-900 font-bold cursor-not-allowed outline-none">
           </div>
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">ห้องประชุม/สถานที่</label> <select id="detail-room" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900"> <option>หอประชุมพุทธรักษา</option> <option>ห้องประชุมชวนชม</option> <option>ห้องประชุมราชพฤกษ์</option> <option>ห้องประชุมปาริชาติ</option> <option>โดมอเนกประสงค์</option> <option>สนามฟุตบอล</option> </select>
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">ห้องประชุม/สถานที่</label> <select id="detail-room" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900"> <option>หอประชุมพุทธรักษา</option> <option>ห้องประชุมชวนชม</option> <option>ห้องประชุมราชพฤกษ์</option> <option>ห้องประชุมปาริชาติ</option> <option>โดมอเนกประสงค์</option> <option>สนามฟุตบอล</option> </select>
           </div>
          </div><!-- ชื่อ + เบอร์ -->
          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">ชื่อ-นามสกุล ผู้จอง</label> <input type="text" id="detail-name" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">ชื่อ-นามสกุล ผู้จอง</label> <input type="text" id="detail-name" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
           </div>
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">เบอร์โทรศัพท์</label> <input type="tel" id="detail-tel" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">เบอร์โทรศัพท์</label> <input type="tel" id="detail-tel" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
           </div>
          </div><!-- ฝ่าย + วันที่ -->
          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">หน่วยงาน / ฝ่าย</label> <input type="text" id="detail-dept" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">หน่วยงาน / ฝ่าย</label> <input type="text" id="detail-dept" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
           </div>
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">วันที่จอง</label> <input type="date" id="detail-date" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">วันที่จอง</label> <input type="date" id="detail-date" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
           </div>
          </div><!-- ช่วงเวลา + จำนวน -->
          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">ช่วงเวลา</label> <input type="text" id="detail-time" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">ช่วงเวลา</label> <input type="text" id="detail-time" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
           </div>
-          <div class="space-y-2">
-           <label class="text-sm font-black text-blue-900 ml-1">จำนวนผู้เข้าร่วม</label> <input type="number" id="detail-people" min="1" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+          <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">จำนวนผู้เข้าร่วม</label> <input type="number" id="detail-people" min="1" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
           </div>
          </div><!-- วัตถุประสงค์ -->
-         <div class="space-y-2">
-          <label class="text-sm font-black text-blue-900 ml-1">วัตถุประสงค์</label> <textarea id="detail-purpose" rows="3" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white resize-none"></textarea>
+         <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">วัตถุประสงค์</label> <textarea id="detail-purpose" rows="3" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white resize-none"></textarea>
          </div><!-- อุปกรณ์ -->
-         <div class="space-y-2">
-          <label class="text-sm font-black text-blue-900 ml-1">อุปกรณ์ที่ใช้</label> <textarea id="detail-equipment" rows="2" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white resize-none"></textarea>
+         <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">อุปกรณ์ที่ใช้</label> <textarea id="detail-equipment" rows="2" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white resize-none"></textarea>
          </div><!-- สถานะ -->
-         <div class="space-y-3 bg-blue-50 p-4 rounded-xl border-2 border-blue-200">
-          <label class="text-sm font-black text-blue-900">เปลี่ยนสถานะเป็น</label>
-          <div class="space-y-2">
-           <select id="detail-status" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <option>รอการอนุมัติ</option> <option>อนุมัติแล้ว</option> <option>ยกเลิก</option> </select>
+         <div class="space-y-3 bg-blue-50 p-4 rounded-xl border-2 border-blue-200"><label class="text-sm font-black text-blue-900">เปลี่ยนสถานะเป็น</label>
+          <div class="space-y-2"><select id="detail-status" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <option>รอการอนุมัติ</option> <option>อนุมัติแล้ว</option> <option>ยกเลิก</option> </select>
           </div>
          </div><!-- ปุ่มบันทึก -->
-         <div class="flex gap-3 pt-4 border-t-2 border-blue-200">
-          <button type="button" onclick="closeBookingDetailsModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-black px-4 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"> <i class="fas fa-times"></i> ยกเลิก </button> <button type="button" onclick="saveBookingDetails()" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-black px-4 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg"> <i class="fas fa-save"></i> บันทึกการเปลี่ยนแปลง </button>
+         <div class="flex gap-3 pt-4 border-t-2 border-blue-200"><button type="button" onclick="closeBookingDetailsModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-black px-4 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"> <i class="fas fa-times"></i> ยกเลิก </button> <button type="button" onclick="saveBookingDetails()" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-black px-4 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg"> <i class="fas fa-save"></i> บันทึกการเปลี่ยนแปลง </button>
          </div>
         </form>
        </div>
@@ -504,14 +479,12 @@
       <div class="fixed inset-0 bg-blue-900/50 backdrop-blur-sm" onclick="closeRoomDetails()"></div>
       <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden modal-content border-2 border-blue-200">
        <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-8 py-6 flex justify-between items-center text-white">
-        <div class="flex items-center gap-3">
-         <i class="fa-solid fa-door-open text-2xl text-yellow-300"></i>
+        <div class="flex items-center gap-3"><i class="fa-solid fa-door-open text-2xl text-yellow-300"></i>
          <h3 id="roomDetailsTitle" class="font-black text-xl">รายละเอียดห้องประชุม</h3>
         </div><button onclick="closeRoomDetails()" class="hover:bg-white/20 p-2 rounded-full transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
        </div>
        <div class="p-8 bg-white max-h-[80vh] overflow-y-auto">
-        <div class="space-y-6">
-         <!-- Room Info -->
+        <div class="space-y-6"><!-- Room Info -->
          <div class="bg-blue-50 rounded-xl border-2 border-blue-200 p-4">
           <div class="grid grid-cols-2 gap-4">
            <div>
@@ -555,43 +528,98 @@
      </div>
     </div>
     <script>
-// ===== DATA SDK INITIALIZATION =====
-let currentBookings = [];
+// ===== FIREBASE INITIALIZATION =====
+const firebaseConfig = {
+  apiKey: "AIzaSyDBtM8x62v2KafPuGtiE29gRF7IxM2pITU",
+  authDomain: "np-webapp-74616.firebaseapp.com",
+  databaseURL: "https://np-webapp-74616-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "np-webapp-74616",
+  storageBucket: "np-webapp-74616.firebasestorage.app",
+  messagingSenderId: "275537025660",
+  appId: "1:275537025660:web:4fdc11e0fe22e679f6c7f9",
+  measurementId: "G-WWKX6KZ3Z6"
+};
 
-const dataHandler = {
-    onDataChanged(data) {
-        currentBookings = data;
-        renderTable(data);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+
+let currentUser = null;
+let currentBookings = [];
+let bookingsRef;
+
+// Set up Google auth provider
+const provider = new firebase.auth.GoogleAuthProvider();
+
+// ===== AUTH STATE TRACKING =====
+auth.onAuthStateChanged(user => {
+    currentUser = user;
+    if(user) {
+        console.log('User logged in:', user.email);
+        loadBookingsFromFirebase();
+    } else {
+        console.log('User logged out');
+        currentBookings = [];
+        renderTable([]);
+    }
+});
+
+// ===== FIREBASE DATA MANAGEMENT =====
+function loadBookingsFromFirebase() {
+    bookingsRef = db.ref('bookings');
+    bookingsRef.on('value', snapshot => {
+        currentBookings = [];
+        if(snapshot.exists()) {
+            snapshot.forEach(child => {
+                currentBookings.push({
+                    ...child.val(),
+                    firebaseId: child.key
+                });
+            });
+        }
+        renderTable(currentBookings);
         renderCalendar();
         renderRooms();
         refreshChart();
-        updateSyncStatus('Connected');
-    }
-};
+    });
+}
 
-async function initializeSDK() {
-    const result = await window.dataSdk.init(dataHandler);
-    if (result.isOk) {
-        updateSyncStatus('Connected');
+// ===== LOGIN/LOGOUT FUNCTIONS =====
+function checkAuthAndOpenBooking() {
+    if(currentUser) {
+        openBookingModal();
     } else {
-        console.error('Data SDK init failed');
-        updateSyncStatus('Error');
+        openGoogleLogin();
     }
 }
 
-function updateSyncStatus(status) {
-    const syncStatus = document.getElementById('syncStatus');
-    if (status === 'Connected') {
-        syncStatus.textContent = 'Connected';
-        syncStatus.className = 'text-xs font-bold px-3 py-1.5 rounded-full bg-green-100 text-green-800 uppercase min-w-[90px]';
-    } else if (status === 'Error') {
-        syncStatus.textContent = 'Error';
-        syncStatus.className = 'text-xs font-bold px-3 py-1.5 rounded-full bg-red-100 text-red-800 uppercase min-w-[90px]';
+function openGoogleLogin() {
+    document.getElementById('googleLoginModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeGoogleLogin() {
+    document.getElementById('googleLoginModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+async function googleLogin() {
+    try {
+        const result = await auth.signInWithPopup(provider);
+        closeGoogleLogin();
+        showToast('✅ เข้าสู่ระบบสำเร็จ', 'success');
+        openBookingModal();
+    } catch(error) {
+        console.error('Google login error:', error);
+        showToast('❌ เกิดข้อผิดพลาดในการเข้าสู่ระบบ: ' + error.message, 'error');
     }
 }
 
-// Initialize SDK before doing anything else
-initializeSDK();
+function guestAccess() {
+    closeGoogleLogin();
+    openBookingModal();
+    showToast('ℹ️ ใช้งานแบบไม่ลงชื่อ', 'info');
+}
 
 // ===== CONSTANTS =====
 const TH_MONTHS       = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
@@ -1035,48 +1063,36 @@ document.getElementById('bookingForm').addEventListener('submit', async e=>{
 
     const bookingId = document.getElementById('bookingIdInput').value;
     
-    // ตรวจสอบว่าเลขที่คำร้องไม่ซ้ำ
-    const isDuplicate = currentBookings.some(b => b.booking_id === bookingId);
-    if(isDuplicate) {
-        showToast('❌ เลขที่คำร้องนี้มีอยู่แล้ว กรุณารีเฟรชหน้าแล้วลองใหม่', 'error');
-        btn.disabled=false; loader.classList.add('hidden'); text.textContent='ยืนยันการส่งคำร้อง';
-        return;
-    }
-
     const newB={
         booking_id:      bookingId,
         booking_date:    bookingDate,
         booking_time:    timeResult.time,
-        is_allday:       String(timeResult.allday),
+        is_allday:       timeResult.allday,
         room_name:       roomName,
         requester_name:  requesterName,
+        requester_email: currentUser ? currentUser.email : 'guest@example.com',
         department:      document.getElementById('f-dept').value.trim() || '-',
         purpose:         document.getElementById('f-purpose').value.trim(),
-        attendee_count:  String(parseInt(document.getElementById('f-people').value) || 0),
+        attendee_count:  parseInt(document.getElementById('f-people').value) || 0,
         status:          'รอการอนุมัติ',
         phone:           phone,
         equipment:       equipmentStr,
-        attachment_filename: '-',
-        attachment_link:     '-',
         created_at:      new Date().toISOString()
     };
 
     try {
-        // Save to Data SDK
-        const result = await window.dataSdk.create(newB);
-        if(result.isOk) {
-            closeBookingModal();
-            showToast('✅ บันทึกสำเร็จ! เลขที่: '+newB.booking_id, 'success');
-            setTimeout(() => {
-                document.getElementById('bookingForm').reset();
-                selectedStart = null;
-                selectedEnd = null;
-                renderHourGrid();
-            }, 800);
-        } else {
-            showToast('❌ เกิดข้อผิดพลาด: ' + (result.error?.message || 'ไม่ทราบสาเหตุ'), 'error');
-            btn.disabled=false; loader.classList.add('hidden'); text.textContent='ยืนยันการส่งคำร้อง';
-        }
+        // Save to Firebase
+        const ref = db.ref('bookings').push();
+        await ref.set(newB);
+        
+        closeBookingModal();
+        showToast('✅ บันทึกสำเร็จ! เลขที่: '+newB.booking_id, 'success');
+        setTimeout(() => {
+            document.getElementById('bookingForm').reset();
+            selectedStart = null;
+            selectedEnd = null;
+            renderHourGrid();
+        }, 800);
     } catch(err) {
         showToast('❌ เกิดข้อผิดพลาด: ' + err.message, 'error');
         btn.disabled=false; loader.classList.add('hidden'); text.textContent='ยืนยันการส่งคำร้อง';
@@ -1193,7 +1209,7 @@ function clearAdminFilter(){
 let currentEditingBooking = null;
 
 function openStatusModal(backendId, bookingId, roomName, requesterName){
-    currentEditingBooking = currentBookings.find(b => b.__backendId === backendId);
+    currentEditingBooking = currentBookings.find(b => b.firebaseId === backendId);
     if(!currentEditingBooking) {
         showToast('❌ ไม่พบข้อมูลการจอง', 'error');
         return;
@@ -1211,65 +1227,35 @@ function closeStatusUpdate(){
 }
 
 async function updateBookingStatus(newStatus){
-    if(!currentEditingBooking || !currentEditingBooking.__backendId) {
+    if(!currentEditingBooking || !currentEditingBooking.firebaseId) {
         showToast('❌ ข้อผิดพลาด', 'error');
         return;
     }
     
-    const updatedBooking = {
-        ...currentEditingBooking,
-        status: newStatus
-    };
-    
-    const result = await window.dataSdk.update(updatedBooking);
-    if(result.isOk){
+    try {
+        await db.ref('bookings').child(currentEditingBooking.firebaseId).update({
+            status: newStatus
+        });
         showToast('✅ อัปเดตสถานะสำเร็จ', 'success');
         setTimeout(() => {
             closeStatusUpdate();
             refreshAdminPanel();
         }, 600);
-    } else {
-        showToast('❌ เกิดข้อผิดพลาด', 'error');
+    } catch(err) {
+        showToast('❌ เกิดข้อผิดพลาด: ' + err.message, 'error');
     }
-}
-
-async function deleteBooking(backendId, bookingId){
-    const booking = currentBookings.find(b => b.__backendId === backendId);
-    if(!booking) {
-        showToast('❌ ไม่พบข้อมูลการจอง', 'error');
-        return;
-    }
-    
-    // Inline confirmation - replace button with confirm/cancel
-    const tbody = document.getElementById('admin-tbody');
-    const row = tbody.querySelector(`tr:has(button[onclick*="${backendId}"])`);
-    if(!row) return;
-    
-    const actionCell = row.cells[row.cells.length - 1];
-    const originalContent = actionCell.innerHTML;
-    
-    actionCell.innerHTML = `
-        <div class="flex items-center justify-center gap-1">
-            <button onclick="confirmDeleteBooking('${backendId}')" class="bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded text-xs">
-                ยืนยันลบ
-            </button>
-            <button onclick="cancelDelete('${backendId}')" class="bg-slate-300 hover:bg-slate-400 text-slate-700 font-bold px-2 py-1 rounded text-xs">
-                ยกเลิก
-            </button>
-        </div>`;
 }
 
 async function confirmDeleteBooking(backendId){
-    const booking = currentBookings.find(b => b.__backendId === backendId);
+    const booking = currentBookings.find(b => b.firebaseId === backendId);
     if(!booking) return;
     
-    const result = await window.dataSdk.delete(booking);
-    if(result.isOk){
+    try {
+        await db.ref('bookings').child(backendId).remove();
         showToast('✅ ลบการจองสำเร็จ', 'success');
         refreshAdminPanel();
-    } else {
-        showToast('❌ เกิดข้อผิดพลาด', 'error');
-        location.reload();
+    } catch(err) {
+        showToast('❌ เกิดข้อผิดพลาด: ' + err.message, 'error');
     }
 }
 
@@ -1458,5 +1444,5 @@ window.addEventListener('load', () => {
 </script>
    </div>
   </main>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d784d3de2e55805',t:'MTc3MjcwNTEyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d785398f1a2d00c',t:'MTc3MjcwNTM4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
