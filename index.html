@@ -1,17 +1,19 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบจองห้องประชุม | โรงเรียนหนองกี่พิทยาคม</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <style>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบจองห้องประชุม | โรงเรียนหนองกี่พิทยาคม</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        html, body { height: 100%; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Sarabun', sans-serif; background: #ffffff; color: #1e40af; scroll-behavior: smooth; min-height: 100vh; }
+        body { font-family: 'Sarabun', sans-serif; background: #ffffff; color: #1e40af; scroll-behavior: smooth; }
         .chart-container { position: relative; width: 100%; max-width: 800px; margin: auto; height: 300px; }
         @media (min-width: 768px) { .chart-container { height: 400px; } }
 
@@ -35,8 +37,9 @@
         .step-card:hover::before { opacity: 1; }
 
         .submit-btn { background: #ffffff; transition: all 0.3s ease; position: relative; overflow: hidden; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #1e3a8a !important; font-weight: 900 !important; }
-        .submit-btn:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.12); transform: translateY(-2px); background: #f8fafc; }
-        .submit-btn:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .submit-btn:hover:not(:disabled) { box-shadow: 0 8px 20px rgba(0,0,0,0.12); transform: translateY(-2px); background: #f8fafc; }
+        .submit-btn:active:not(:disabled) { transform: translateY(0); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
         .modal-content { animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1); }
         @keyframes slideUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
@@ -90,342 +93,314 @@
         .hour-slot.selected-mid   { background: #93c5fd; color: #1e3a8a; border-radius: 0; }
         .hour-slot.selected-single { background: #0052cc; color: white; border-radius: 6px; }
     </style>
-</head>
-<body class="antialiased flex flex-col min-h-screen">
-
-<!-- Navigation -->
-<nav class="fixed w-full top-0 z-50 glass-nav">
-    <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <img src="https://nongki.ac.th/np2019/img/home/logo_np.gif" alt="Logo" class="w-12 h-12 object-contain" loading="lazy" onerror="this.style.opacity='0'">
-            <div class="flex flex-col">
-                <span class="text-lg font-bold nav-text leading-none">ระบบจองห้องประชุม</span>
-                <span class="text-xs nav-text font-medium opacity-90">โรงเรียนหนองกี่พิทยาคม</span>
-            </div>
-        </div>
-        <div class="flex items-center gap-4">
-            <button onclick="openAdminLogin()" class="hidden md:flex items-center gap-2 text-white hover:text-yellow-300 font-bold text-sm px-4 py-2 rounded-xl hover:bg-white/10 transition-all border border-white/30">
-                <i class="fa-solid fa-user-shield"></i><span>สำหรับเจ้าหน้าที่</span>
-            </button>
-            <button onclick="openBookingModal()" class="submit-btn text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-2 transition-all hover:shadow-xl">
-                <i class="fa-solid fa-plus-circle"></i> <span>จองห้องประชุม</span>
-            </button>
-        </div>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+ </head>
+ <body class="antialiased flex flex-col min-h-full w-full"><!-- Navigation -->
+  <nav class="fixed w-full top-0 z-50 glass-nav">
+   <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
+    <div class="flex items-center gap-3"><img src="https://nongki.ac.th/np2019/img/home/logo_np.gif" alt="Logo" class="w-12 h-12 object-contain" loading="lazy" onerror="this.style.opacity='0'">
+     <div class="flex flex-col"><span class="text-lg font-bold nav-text leading-none">ระบบจองห้องประชุม</span> <span class="text-xs nav-text font-medium opacity-90">โรงเรียนหนองกี่พิทยาคม</span>
+     </div>
     </div>
-</nav>
-
-<!-- Main -->
-<main class="flex-grow pb-12 px-4 sm:px-6 lg:px-8 bg-white pt-32 md:pt-36">
-    <div class="max-w-7xl mx-auto">
-
-        <!-- Hero -->
-        <div class="header-section">
-            <h1 class="text-3xl md:text-5xl font-black text-blue-900 mb-6 tracking-tight">
-                ระบบจองห้องประชุม <span class="text-blue-600">โรงเรียนหนองกี่พิทยาคม</span>
-            </h1>
-            <p class="main-desc text-slate-700 max-w-2xl text-sm md:text-base leading-relaxed">
-                บริหารจัดการการใช้ห้องประชุมอย่างมีระบบ โปร่งใส และมีประสิทธิภาพ รองรับทุกกิจกรรมของโรงเรียน
-                สามารถจองได้รายชั่วโมง (06:00–22:00) หรือเหมาทั้งวัน
-            </p>
-        </div>
-
-        <!-- Steps -->
-        <div class="max-w-3xl mx-auto mt-12">
-            <h2 class="text-3xl md:text-4xl font-black text-blue-900 mb-12 text-center">ขั้นตอนการจองห้องประชุม</h2>
-            <div class="relative">
-                <div class="vertical-line hidden md:block"></div>
-                <div class="space-y-8">
-                    <button onclick="openBookingModal()" type="button" class="step-card step-card-button p-8 rounded-2xl relative group md:ml-12 fade-in-up w-full text-left">
-                        <div class="flex gap-6 items-start">
-                            <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0"><i class="fa-solid fa-pen-to-square text-xl"></i></div>
-                            <div class="flex-grow">
-                                <h3 class="font-black text-blue-900 mb-2 text-lg">ยื่นคำขอจองออนไลน์</h3>
-                                <p class="text-sm text-slate-700 leading-relaxed">เลือกห้องประชุม วันที่ และช่วงเวลาที่ต้องการ จองได้รายชั่วโมงหรือทั้งวัน</p>
-                            </div>
-                        </div>
-                    </button>
-                    <button onclick="document.getElementById('table-section').scrollIntoView({behavior:'smooth'})" type="button" class="step-card step-card-button p-8 rounded-2xl relative group md:ml-12 fade-in-up w-full text-left">
-                        <div class="flex gap-6 items-start">
-                            <div class="w-12 h-12 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-xl flex items-center justify-center text-yellow-600 shrink-0"><i class="fa-solid fa-calendar-check text-xl"></i></div>
-                            <div class="flex-grow">
-                                <h3 class="font-black text-blue-900 mb-2 text-lg">ตรวจสอบตารางการจอง</h3>
-                                <p class="text-sm text-slate-700 leading-relaxed">ตรวจสอบความพร้อมของห้องประชุมและดูตารางการจองในแต่ละวัน</p>
-                            </div>
-                        </div>
-                    </button>
-                    <div class="step-card p-8 rounded-2xl relative group md:ml-12 fade-in-up">
-                        <div class="flex gap-6 items-start">
-                            <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center text-blue-700 shrink-0"><i class="fa-solid fa-circle-check text-xl"></i></div>
-                            <div class="flex-grow">
-                                <h3 class="font-black text-blue-900 mb-2 text-lg">รอการอนุมัติจากเจ้าหน้าที่</h3>
-                                <p class="text-sm text-slate-700 leading-relaxed">เจ้าหน้าที่ตรวจสอบและแจ้งผลการอนุมัติตามเบอร์โทรที่ระบุไว้</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="mt-8 md:hidden text-center">
-                <button onclick="openAdminLogin()" class="text-blue-900 font-bold text-sm underline flex items-center justify-center gap-1 hover:text-blue-600 mx-auto">
-                    <i class="fa-solid fa-lock"></i> เข้าสู่หน้าจัดการเจ้าหน้าที่
-                </button>
-            </div>
-        </div>
-
-        <!-- Chart + Sidebar -->
-        <div class="grid lg:grid-cols-3 gap-8 mt-12">
-            <div class="lg:col-span-2 fade-in-up">
-                <div class="glass-card rounded-2xl p-8 shadow-lg h-full flex flex-col">
-                    <div class="flex justify-between items-center mb-8">
-                        <h2 class="text-2xl font-black text-blue-900 flex items-center gap-3 section-title flex-grow">
-                            <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center"><i class="fa-solid fa-chart-column text-white"></i></div>
-                            สถิติการจองห้องประชุม
-                        </h2>
-                        <div class="flex items-center gap-3">
-                            <span id="syncStatus" class="text-xs font-bold px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 uppercase text-center min-w-[90px]">Checking...</span>
-                            <button onclick="loadFromSheet()" class="bg-blue-100 hover:bg-blue-200 text-blue-700 p-2.5 rounded-full transition-all border border-blue-300" title="โหลดข้อมูลจาก Google Sheet"><i class="fa-solid fa-sync-alt"></i></button>
-                        </div>
-                    </div>
-                    <div class="chart-container flex-grow"><canvas id="bookingChart"></canvas></div>
-                </div>
-            </div>
-
-            <div class="lg:col-span-1 space-y-4">
-                <!-- Calendar -->
-                <div class="glass-card rounded-2xl p-4 shadow-lg">
-                    <h2 class="text-sm font-black text-blue-900 mb-3 section-title pb-2 flex items-center gap-2">
-                        <div class="w-6 h-6 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center"><i class="fa-solid fa-calendar text-white text-xs"></i></div>
-                        ปฏิทินการจอง
-                    </h2>
-                    <div class="flex items-center justify-between mb-3">
-                        <button onclick="prevMonth()" class="w-7 h-7 rounded-full bg-blue-100 hover:bg-blue-600 hover:text-white text-blue-700 flex items-center justify-center text-xs transition-all"><i class="fas fa-chevron-left"></i></button>
-                        <span id="cal-title" class="text-xs font-black text-blue-900"></span>
-                        <button onclick="nextMonth()" class="w-7 h-7 rounded-full bg-blue-100 hover:bg-blue-600 hover:text-white text-blue-700 flex items-center justify-center text-xs transition-all"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                    <div class="grid grid-cols-7 gap-0.5" id="calendar"></div>
-                    <div class="flex items-center gap-4 mt-3 text-xs text-slate-500">
-                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-600 inline-block"></span>วันนี้</span>
-                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>มีการจอง</span>
-                    </div>
-                </div>
-
-                <!-- Room Status -->
-                <div class="glass-card rounded-2xl p-3 shadow-lg">
-                    <h2 class="text-sm font-black text-blue-900 mb-2 section-title pb-2 flex items-center gap-2">
-                        <div class="w-6 h-6 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center"><i class="fa-solid fa-door-open text-white text-xs"></i></div>
-                        สถานะห้องประชุม
-                    </h2>
-                    <div class="space-y-1.5" id="room-list"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Booking Table -->
-        <div class="glass-card rounded-2xl p-8 shadow-lg mt-8" id="table-section">
-            <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
-                <h2 class="text-2xl font-black text-blue-900 flex items-center gap-3 section-title flex-grow">
-                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center"><i class="fa-solid fa-table-list text-white"></i></div>
-                    ตารางการจองห้องประชุม
-                </h2>
-                <button onclick="openBookingModal()" class="submit-btn text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
-                    <i class="fa-solid fa-plus"></i> จองใหม่
-                </button>
-            </div>
-            <div class="flex flex-wrap gap-3 mb-6">
-                <input type="date" id="filter-date" onchange="filterTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold">
-                <select id="filter-room" onchange="filterTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold">
-                    <option value="">-- ทุกห้อง --</option>
-                    <option>หอประชุมพุทธรักษา</option>
-                    <option>ห้องประชุมชวนชม</option>
-                    <option>ห้องประชุมราชพฤกษ์</option>
-                    <option>ห้องประชุมปาริชาติ</option>
-                </select>
-                <select id="filter-status" onchange="filterTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold">
-                    <option value="">-- ทุกสถานะ --</option>
-                    <option>รอการอนุมัติ</option>
-                    <option>อนุมัติแล้ว</option>
-                    <option>ยกเลิก</option>
-                </select>
-                <button onclick="clearFilter()" class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold px-4 py-2.5 rounded-xl text-sm transition-all border border-blue-300 flex items-center gap-2">
-                    <i class="fas fa-redo"></i> ล้างตัวกรอง
-                </button>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full border-collapse text-sm">
-                    <thead>
-                        <tr>
-                            <th class="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 text-left font-black rounded-tl-xl">เลขที่</th>
-                            <th class="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 text-left font-black">วันที่</th>
-                            <th class="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 text-left font-black">ห้องประชุม</th>
-                            <th class="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 text-left font-black">ช่วงเวลา</th>
-                            <th class="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 text-left font-black">ผู้จอง / ฝ่าย</th>
-                            <th class="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 text-left font-black">วัตถุประสงค์</th>
-                            <th class="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 text-left font-black rounded-tr-xl">สถานะ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="booking-tbody" class="divide-y divide-blue-100"></tbody>
-                </table>
-            </div>
-        </div>
-
+    <div class="flex items-center gap-4"><button onclick="openAdminLogin()" class="hidden md:flex items-center gap-2 text-white hover:text-yellow-300 font-bold text-sm px-4 py-2 rounded-xl hover:bg-white/10 transition-all border border-white/30"> <i class="fa-solid fa-user-shield"></i><span>สำหรับเจ้าหน้าที่</span> </button> <button onclick="openBookingModal()" class="submit-btn text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-2 transition-all hover:shadow-xl"> <i class="fa-solid fa-plus-circle"></i> <span>จองห้องประชุม</span> </button>
     </div>
-</main>
-
-<!-- ===== BOOKING MODAL ===== -->
-<div id="bookingModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
-    <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="fixed inset-0 bg-blue-900/50 backdrop-blur-sm" onclick="closeBookingModal()"></div>
-        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden modal-content border-2 border-blue-200">
-            <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-8 py-6 flex justify-between items-center text-white">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-calendar-plus text-2xl text-yellow-300"></i>
-                    <h3 class="font-black text-xl">คำขอจองห้องประชุม</h3>
-                </div>
-                <button onclick="closeBookingModal()" class="hover:bg-white/20 p-2 rounded-full transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div class="p-8 bg-white max-h-[80vh] overflow-y-auto">
-                <form id="bookingForm" class="space-y-5">
-                    <input type="hidden" id="bookingIdInput">
-
-                    <!-- เลขที่ + ห้อง -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="space-y-2">
-                            <label class="text-sm font-black text-blue-900 ml-1">เลขที่คำร้อง</label>
-                            <input type="text" id="bookingIdDisplay" disabled class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm bg-blue-50 text-blue-900 font-bold cursor-not-allowed outline-none">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-black text-blue-900 ml-1">ห้องประชุม *</label>
-                            <select id="f-room" required class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900">
-                                <option value="">-- กรุณาเลือกห้อง --</option>
-                                <option>หอประชุมพุทธรักษา</option>
-                                <option>ห้องประชุมชวนชม</option>
-                                <option>ห้องประชุมราชพฤกษ์</option>
-                                <option>ห้องประชุมปาริชาติ</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- ชื่อ + เบอร์ -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="space-y-2">
-                            <label class="text-sm font-black text-blue-900 ml-1">ชื่อ-นามสกุล ผู้จอง *</label>
-                            <input type="text" id="f-name" required placeholder="เช่น นายสมชาย ใจดี" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-black text-blue-900 ml-1">เบอร์โทรศัพท์ *</label>
-                            <input type="tel" id="f-tel" required placeholder="08x-xxx-xxxx" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
-                        </div>
-                    </div>
-
-                    <!-- ฝ่าย + วันที่ -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="space-y-2">
-                            <label class="text-sm font-black text-blue-900 ml-1">หน่วยงาน / ฝ่าย</label>
-                            <input type="text" id="f-dept" placeholder="เช่น ฝ่ายวิชาการ" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-black text-blue-900 ml-1">วันที่จอง *</label>
-                            <input type="date" id="f-date" required class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
-                        </div>
-                    </div>
-
-                    <!-- ประเภทเวลา -->
-                    <div class="space-y-3">
-                        <label class="text-sm font-black text-blue-900 ml-1">ช่วงเวลา *</label>
-                        <div class="flex gap-3">
-                            <button type="button" id="btn-hourly" onclick="setTimeType('hourly')" class="time-type-btn active flex-1 py-3 rounded-xl border-2 font-black text-sm flex items-center justify-center gap-2">
-                                <i class="fas fa-clock"></i> รายชั่วโมง
-                            </button>
-                            <button type="button" id="btn-allday" onclick="setTimeType('allday')" class="time-type-btn flex-1 py-3 rounded-xl border-2 font-black text-sm flex items-center justify-center gap-2">
-                                <i class="fas fa-sun"></i> ทั้งวัน (06:00–22:00)
-                            </button>
-                        </div>
-
-                        <!-- รายชั่วโมง -->
-                        <div id="hourly-section">
-                            <p class="text-xs text-slate-500 mb-2 ml-1">คลิกเลือกชั่วโมงเริ่มต้น แล้วคลิกชั่วโมงสิ้นสุด (หรือคลิกเดียวสำหรับ 1 ชั่วโมง)</p>
-                            <div class="grid grid-cols-8 gap-1" id="hour-grid"></div>
-                            <div id="time-summary" class="mt-2 text-sm font-bold text-blue-700 text-center hidden">
-                                <i class="fas fa-clock mr-1"></i> <span id="time-summary-text"></span>
-                            </div>
-                        </div>
-
-                        <!-- ทั้งวัน -->
-                        <div id="allday-section" class="hidden">
-                            <div class="p-4 bg-blue-50 rounded-xl border-2 border-blue-200 flex items-center gap-3">
-                                <i class="fas fa-sun text-yellow-500 text-2xl"></i>
-                                <div>
-                                    <p class="font-black text-blue-900">จองทั้งวัน</p>
-                                    <p class="text-xs text-slate-500">06:00 – 22:00 น.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- จำนวน + วัตถุประสงค์ -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="space-y-2">
-                            <label class="text-sm font-black text-blue-900 ml-1">จำนวนผู้เข้าร่วม</label>
-                            <input type="number" id="f-people" placeholder="ระบุจำนวน" min="1" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-black text-blue-900 ml-1">วัตถุประสงค์ *</label>
-                            <input type="text" id="f-purpose" required placeholder="เช่น ประชุมผู้ปกครอง" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
-                        </div>
-                    </div>
-
-                    <button type="submit" id="submitBtn" class="submit-btn w-full text-white py-4 rounded-xl font-black flex items-center justify-center gap-3 shadow-xl">
-                        <span id="btnLoader" class="loader hidden"></span>
-                        <span id="btnText">ยืนยันการส่งคำร้อง</span>
-                    </button>
-                </form>
-            </div>
+   </div>
+  </nav><!-- Main -->
+  <main class="flex-grow pb-12 px-4 sm:px-6 lg:px-8 bg-white pt-32 md:pt-36 w-full overflow-auto">
+   <div class="max-w-7xl mx-auto w-full"><!-- Hero -->
+    <div class="header-section">
+     <h1 class="text-3xl md:text-5xl font-black text-blue-900 mb-6 tracking-tight">ระบบจองห้องประชุม <span class="text-blue-600">โรงเรียนหนองกี่พิทยาคม</span></h1>
+     <p class="main-desc text-slate-700 max-w-2xl text-sm md:text-base leading-relaxed">บริหารจัดการการใช้ห้องประชุมอย่างมีระบบ โปร่งใส และมีประสิทธิภาพ รองรับทุกกิจกรรมของโรงเรียน สามารถจองได้รายชั่วโมง (06:00–22:00) หรือเหมาทั้งวัน</p>
+    </div><!-- Steps -->
+    <div class="max-w-3xl mx-auto mt-12">
+     <h2 class="text-3xl md:text-4xl font-black text-blue-900 mb-12 text-center">ขั้นตอนการจองห้องประชุม</h2>
+     <div class="relative">
+      <div class="vertical-line hidden md:block"></div>
+      <div class="space-y-8"><button onclick="openBookingModal()" type="button" class="step-card step-card-button p-8 rounded-2xl relative group md:ml-12 fade-in-up w-full text-left">
+        <div class="flex gap-6 items-start">
+         <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0">
+          <i class="fa-solid fa-pen-to-square text-xl"></i>
+         </div>
+         <div class="flex-grow">
+          <h3 class="font-black text-blue-900 mb-2 text-lg">ยื่นคำขอจองออนไลน์</h3>
+          <p class="text-sm text-slate-700 leading-relaxed">เลือกห้องประชุม วันที่ และช่วงเวลาที่ต้องการ จองได้รายชั่วโมงหรือทั้งวัน</p>
+         </div>
+        </div></button> <button onclick="document.getElementById('table-section').scrollIntoView({behavior:'smooth'})" type="button" class="step-card step-card-button p-8 rounded-2xl relative group md:ml-12 fade-in-up w-full text-left">
+        <div class="flex gap-6 items-start">
+         <div class="w-12 h-12 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-xl flex items-center justify-center text-yellow-600 shrink-0">
+          <i class="fa-solid fa-calendar-check text-xl"></i>
+         </div>
+         <div class="flex-grow">
+          <h3 class="font-black text-blue-900 mb-2 text-lg">ตรวจสอบตารางการจอง</h3>
+          <p class="text-sm text-slate-700 leading-relaxed">ตรวจสอบความพร้อมของห้องประชุมและดูตารางการจองในแต่ละวัน</p>
+         </div>
+        </div></button>
+       <div class="step-card p-8 rounded-2xl relative group md:ml-12 fade-in-up">
+        <div class="flex gap-6 items-start">
+         <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center text-blue-700 shrink-0">
+          <i class="fa-solid fa-circle-check text-xl"></i>
+         </div>
+         <div class="flex-grow">
+          <h3 class="font-black text-blue-900 mb-2 text-lg">รอการอนุมัติจากเจ้าหน้าที่</h3>
+          <p class="text-sm text-slate-700 leading-relaxed">เจ้าหน้าที่ตรวจสอบและแจ้งผลการอนุมัติตามเบอร์โทรที่ระบุไว้</p>
+         </div>
         </div>
-    </div>
-</div>
-
-<!-- Admin Modal -->
-<div id="adminModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
-    <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="fixed inset-0 bg-blue-900/50 backdrop-blur-sm" onclick="closeAdminLogin()"></div>
-        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden modal-content border-2 border-blue-200">
-            <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-8 py-6 flex justify-between items-center text-white">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-lock text-2xl"></i>
-                    <h3 class="font-black text-xl">เข้าสู่ระบบเจ้าหน้าที่</h3>
-                </div>
-                <button onclick="closeAdminLogin()" class="hover:bg-white/20 p-2 rounded-full transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div class="p-8 bg-white">
-                <div class="mb-6 p-4 bg-blue-50 rounded-xl border-2 border-blue-200">
-                    <p class="text-sm text-blue-800 font-bold"><i class="fa-solid fa-key mr-2"></i>กรุณากรอกรหัสผ่านเพื่อเข้าสู่ระบบเจ้าหน้าที่</p>
-                </div>
-                <form class="space-y-4" onsubmit="handleAdminLogin(event)">
-                    <div class="space-y-2">
-                        <label class="text-sm font-black text-blue-900 ml-1">รหัสผ่าน</label>
-                        <input type="password" id="adminPassword" placeholder="กรอกรหัสผ่าน..." required class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
-                    </div>
-                    <div id="passwordError" class="p-3 bg-red-50 border-2 border-red-300 rounded-xl text-red-700 text-sm font-bold hidden">
-                        <i class="fa-solid fa-exclamation-circle mr-2"></i>รหัสผ่านไม่ถูกต้อง
-                    </div>
-                    <button type="submit" class="submit-btn w-full text-white py-3 rounded-xl font-black flex items-center justify-center gap-2 shadow-lg">
-                        <i class="fa-solid fa-arrow-right"></i><span>เข้าสู่ระบบ</span>
-                    </button>
-                </form>
-                <p class="text-center text-xs text-slate-500 mt-6">หากลืมรหัสผ่าน โปรดติดต่อครูหัวหน้าฝ่ายบริหาร</p>
-            </div>
+       </div>
+      </div>
+     </div>
+     <div class="mt-8 md:hidden text-center"><button onclick="openAdminLogin()" class="text-blue-900 font-bold text-sm underline flex items-center justify-center gap-1 hover:text-blue-600 mx-auto"> <i class="fa-solid fa-lock"></i> เข้าสู่หน้าจัดการเจ้าหน้าที่ </button>
+     </div>
+    </div><!-- Chart + Sidebar -->
+    <div class="grid lg:grid-cols-3 gap-8 mt-12">
+     <div class="lg:col-span-2 fade-in-up">
+      <div class="glass-card rounded-2xl p-8 shadow-lg h-full flex flex-col">
+       <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl font-black text-blue-900 flex items-center gap-3 section-title flex-grow">
+         <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+          <i class="fa-solid fa-chart-column text-white"></i>
+         </div> สถิติการจองห้องประชุม</h2>
+        <div class="flex items-center gap-3"><span id="syncStatus" class="text-xs font-bold px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 uppercase text-center min-w-[90px]">Loading...</span> <button onclick="loadFromGoogleSheet()" class="bg-blue-100 hover:bg-blue-200 text-blue-700 p-2.5 rounded-full transition-all border border-blue-300" title="โหลดข้อมูลจาก Google Sheet"><i class="fa-solid fa-sync-alt"></i></button>
         </div>
+       </div>
+       <div class="chart-container flex-grow">
+        <canvas id="bookingChart"></canvas>
+       </div>
+      </div>
+     </div>
+     <div class="lg:col-span-1 space-y-4"><!-- Calendar -->
+      <div class="glass-card rounded-2xl p-4 shadow-lg">
+       <h2 class="text-sm font-black text-blue-900 mb-3 section-title pb-2 flex items-center gap-2">
+        <div class="w-6 h-6 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+         <i class="fa-solid fa-calendar text-white text-xs"></i>
+        </div> ปฏิทินการจอง</h2>
+       <div class="flex items-center justify-between mb-3"><button onclick="prevMonth()" class="w-7 h-7 rounded-full bg-blue-100 hover:bg-blue-600 hover:text-white text-blue-700 flex items-center justify-center text-xs transition-all"><i class="fas fa-chevron-left"></i></button> <span id="cal-title" class="text-xs font-black text-blue-900"></span> <button onclick="nextMonth()" class="w-7 h-7 rounded-full bg-blue-100 hover:bg-blue-600 hover:text-white text-blue-700 flex items-center justify-center text-xs transition-all"><i class="fas fa-chevron-right"></i></button>
+       </div>
+       <div class="grid grid-cols-7 gap-0.5" id="calendar"></div>
+       <div class="flex items-center gap-4 mt-3 text-xs text-slate-500"><span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-600 inline-block"></span>วันนี้</span> <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>มีการจอง</span>
+       </div>
+      </div><!-- Room Status -->
+      <div class="glass-card rounded-2xl p-3 shadow-lg">
+       <h2 class="text-sm font-black text-blue-900 mb-2 section-title pb-2 flex items-center gap-2">
+        <div class="w-6 h-6 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+         <i class="fa-solid fa-door-open text-white text-xs"></i>
+        </div> สถานะห้องประชุม</h2>
+       <div class="space-y-1.5" id="room-list"></div>
+      </div>
+     </div>
+    </div><!-- Booking Table -->
+    <div class="glass-card rounded-2xl p-8 shadow-lg mt-8" id="table-section">
+     <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+      <h2 class="text-2xl font-black text-blue-900 flex items-center gap-3 section-title flex-grow">
+       <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+        <i class="fa-solid fa-table-list text-white"></i>
+       </div> ตารางการจองห้องประชุม</h2><button onclick="openBookingModal()" class="submit-btn text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-2"> <i class="fa-solid fa-plus"></i> จองใหม่ </button>
+     </div>
+     <div class="flex flex-wrap gap-3 mb-6"><input type="date" id="filter-date" onchange="filterTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <select id="filter-room" onchange="filterTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <option value="">-- ทุกห้อง --</option> <option>หอประชุมพุทธรักษา</option> <option>ห้องประชุมชวนชม</option> <option>ห้องประชุมราชพฤกษ์</option> <option>ห้องประชุมปาริชาติ</option> </select> <select id="filter-status" onchange="filterTable()" class="border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900 font-bold"> <option value="">-- ทุกสถานะ --</option> <option>รอการอนุมัติ</option> <option>อนุมัติแล้ว</option> <option>ยกเลิก</option> </select> <button onclick="clearFilter()" class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold px-4 py-2.5 rounded-xl text-sm transition-all border border-blue-300 flex items-center gap-2"> <i class="fas fa-redo"></i> ล้างตัวกรอง </button>
+     </div>
+     <div class="overflow-x-auto">
+      <table class="w-full border-collapse text-sm">
+       <thead>
+        <tr>
+         <th class="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 text-left font-black rounded-tl-xl">เลขที่</th>
+         <th class="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 text-left font-black">วันที่</th>
+         <th class="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 text-left font-black">ห้องประชุม</th>
+         <th class="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 text-left font-black">ช่วงเวลา</th>
+         <th class="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 text-left font-black">ผู้จอง / ฝ่าย</th>
+         <th class="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 text-left font-black">วัตถุประสงค์</th>
+         <th class="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 text-left font-black rounded-tr-xl">สถานะ</th>
+        </tr>
+       </thead>
+       <tbody id="booking-tbody" class="divide-y divide-blue-100"></tbody>
+      </table>
+     </div>
     </div>
-</div>
+   </div>
+  </main><!-- ===== BOOKING MODAL ===== -->
+  <div id="bookingModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+   <div class="flex items-center justify-center min-h-full p-4">
+    <div class="fixed inset-0 bg-blue-900/50 backdrop-blur-sm" onclick="closeBookingModal()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden modal-content border-2 border-blue-200">
+     <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-8 py-6 flex justify-between items-center text-white">
+      <div class="flex items-center gap-3"><i class="fa-solid fa-calendar-plus text-2xl text-yellow-300"></i>
+       <h3 class="font-black text-xl">คำขอจองห้องประชุม</h3>
+      </div><button onclick="closeBookingModal()" class="hover:bg-white/20 p-2 rounded-full transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+     </div>
+     <div class="p-8 bg-white max-h-[80vh] overflow-y-auto">
+      <form id="bookingForm" class="space-y-5"><input type="hidden" id="bookingIdInput"> <!-- เลขที่ + ห้อง -->
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">เลขที่คำร้อง</label> <input type="text" id="bookingIdDisplay" disabled class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm bg-blue-50 text-blue-900 font-bold cursor-not-allowed outline-none">
+        </div>
+        <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">ห้องประชุม *</label> <select id="f-room" required class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white text-blue-900"> <option value="">-- กรุณาเลือกห้อง --</option> <option>หอประชุมพุทธรักษา</option> <option>ห้องประชุมชวนชม</option> <option>ห้องประชุมราชพฤกษ์</option> <option>ห้องประชุมปาริชาติ</option> </select>
+        </div>
+       </div><!-- ชื่อ + เบอร์ -->
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">ชื่อ-นามสกุล ผู้จอง *</label> <input type="text" id="f-name" required placeholder="เช่น นายสมชาย ใจดี" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+        </div>
+        <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">เบอร์โทรศัพท์ *</label> <input type="tel" id="f-tel" required placeholder="08x-xxx-xxxx" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+        </div>
+       </div><!-- ฝ่าย + วันที่ -->
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">หน่วยงาน / ฝ่าย</label> <input type="text" id="f-dept" placeholder="เช่น ฝ่ายวิชาการ" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+        </div>
+        <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">วันที่จอง *</label> <input type="date" id="f-date" required class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+        </div>
+       </div><!-- ประเภทเวลา -->
+       <div class="space-y-3"><label class="text-sm font-black text-blue-900 ml-1">ช่วงเวลา *</label>
+        <div class="flex gap-3"><button type="button" id="btn-hourly" onclick="setTimeType('hourly')" class="time-type-btn active flex-1 py-3 rounded-xl border-2 font-black text-sm flex items-center justify-center gap-2"> <i class="fas fa-clock"></i> รายชั่วโมง </button> <button type="button" id="btn-allday" onclick="setTimeType('allday')" class="time-type-btn flex-1 py-3 rounded-xl border-2 font-black text-sm flex items-center justify-center gap-2"> <i class="fas fa-sun"></i> ทั้งวัน (06:00–22:00) </button>
+        </div><!-- รายชั่วโมง -->
+        <div id="hourly-section">
+         <p class="text-xs text-slate-500 mb-2 ml-1">คลิกเลือกชั่วโมงเริ่มต้น แล้วคลิกชั่วโมงสิ้นสุด (หรือคลิกเดียวสำหรับ 1 ชั่วโมง)</p>
+         <div class="grid grid-cols-8 gap-1" id="hour-grid"></div>
+         <div id="time-summary" class="mt-2 text-sm font-bold text-blue-700 text-center hidden"><i class="fas fa-clock mr-1"></i> <span id="time-summary-text"></span>
+         </div>
+        </div><!-- ทั้งวัน -->
+        <div id="allday-section" class="hidden">
+         <div class="p-4 bg-blue-50 rounded-xl border-2 border-blue-200 flex items-center gap-3"><i class="fas fa-sun text-yellow-500 text-2xl"></i>
+          <div>
+           <p class="font-black text-blue-900">จองทั้งวัน</p>
+           <p class="text-xs text-slate-500">06:00 – 22:00 น.</p>
+          </div>
+         </div>
+        </div>
+       </div><!-- จำนวน + วัตถุประสงค์ -->
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">จำนวนผู้เข้าร่วม</label> <input type="number" id="f-people" placeholder="ระบุจำนวน" min="1" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+        </div>
+        <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">วัตถุประสงค์ *</label> <input type="text" id="f-purpose" required placeholder="เช่น ประชุมผู้ปกครอง" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+        </div>
+       </div><button type="submit" id="submitBtn" class="submit-btn w-full text-white py-4 rounded-xl font-black flex items-center justify-center gap-3 shadow-xl"> <span id="btnLoader" class="loader hidden"></span> <span id="btnText">ยืนยันการส่งคำร้อง</span> </button>
+      </form>
+     </div>
+    </div>
+   </div>
+  </div><!-- Admin Modal -->
+  <div id="adminModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+   <div class="flex items-center justify-center min-h-full p-4">
+    <div class="fixed inset-0 bg-blue-900/50 backdrop-blur-sm" onclick="closeAdminLogin()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden modal-content border-2 border-blue-200">
+     <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-8 py-6 flex justify-between items-center text-white">
+      <div class="flex items-center gap-3"><i class="fa-solid fa-lock text-2xl"></i>
+       <h3 class="font-black text-xl">เข้าสู่ระบบเจ้าหน้าที่</h3>
+      </div><button onclick="closeAdminLogin()" class="hover:bg-white/20 p-2 rounded-full transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+     </div>
+     <div class="p-8 bg-white">
+      <div class="mb-6 p-4 bg-blue-50 rounded-xl border-2 border-blue-200">
+       <p class="text-sm text-blue-800 font-bold"><i class="fa-solid fa-key mr-2"></i>กรุณากรอกรหัสผ่านเพื่อเข้าสู่ระบบเจ้าหน้าที่</p>
+      </div>
+      <form class="space-y-4" onsubmit="handleAdminLogin(event)">
+       <div class="space-y-2"><label class="text-sm font-black text-blue-900 ml-1">รหัสผ่าน</label> <input type="password" id="adminPassword" placeholder="กรอกรหัสผ่าน..." required class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 transition-all bg-white">
+       </div>
+       <div id="passwordError" class="p-3 bg-red-50 border-2 border-red-300 rounded-xl text-red-700 text-sm font-bold hidden"><i class="fa-solid fa-exclamation-circle mr-2"></i>รหัสผ่านไม่ถูกต้อง
+       </div><button type="submit" class="submit-btn w-full text-white py-3 rounded-xl font-black flex items-center justify-center gap-2 shadow-lg"> <i class="fa-solid fa-arrow-right"></i><span>เข้าสู่ระบบ</span> </button>
+      </form>
+      <p class="text-center text-xs text-slate-500 mt-6">หากลืมรหัสผ่าน โปรดติดต่อครูหัวหน้าฝ่ายบริหาร</p>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+// ===== GOOGLE SHEETS CONFIG =====
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlG1cSQSFttc8lzi9XVLmBM8XEn39yr-ihEj7jsxAEI_ntp5l48rDOegv1am4kYsC_Aw/exec';
 
-<script>
-// ===== GOOGLE APPS SCRIPT =====
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxQso5V12F26WvVJCSNo7ldfRadDg5_o9veCXyz9s84kPIlGUZYl3BLuddMrm86B8uzaA/exec';
+// ===== DATA SDK INITIALIZATION =====
+let currentBookings = [];
+let googleSheetConnected = false;
+
+const dataHandler = {
+    onDataChanged(data) {
+        currentBookings = data;
+        renderTable(data);
+        renderCalendar();
+        refreshChart();
+    }
+};
+
+async function initializeSDK() {
+    const result = await window.dataSdk.init(dataHandler);
+    if (result.isOk) {
+        document.getElementById('syncStatus').textContent = 'Connected';
+        document.getElementById('syncStatus').className = 'text-xs font-bold px-3 py-1.5 rounded-full bg-green-100 text-green-800 uppercase min-w-[90px]';
+    } else {
+        console.error('Data SDK init failed');
+    }
+}
+
+// Initialize SDK before doing anything else
+initializeSDK();
+
+// ===== GOOGLE SHEETS INTEGRATION =====
+async function loadFromGoogleSheet() {
+    const syncStatus = document.getElementById('syncStatus');
+    syncStatus.textContent = 'Loading...';
+    syncStatus.className = 'text-xs font-bold px-3 py-1.5 rounded-full bg-blue-200 text-blue-800 uppercase animate-pulse min-w-[90px]';
+    
+    // Check if URL is configured
+    if (GOOGLE_SCRIPT_URL.includes('YOUR_DEPLOYMENT_ID')) {
+        syncStatus.textContent = 'Not Config';
+        syncStatus.className = 'text-xs font-bold px-3 py-1.5 rounded-full bg-red-100 text-red-800 uppercase min-w-[90px]';
+        showToast('❌ ยังไม่ได้ตั้งค่า Google Sheet URL', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getData&t=${Date.now()}`, {
+            method: 'GET',
+            mode: 'cors'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const json = await response.json();
+        
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+            const convertedData = json.data.map((row, idx) => ({
+                booking_id: row[0] || `BK${String(idx+1).padStart(3,'0')}`,
+                booking_date: row[1] || '',
+                booking_time: row[2] || '',
+                is_allday: row[3] === 'ทั้งวัน' || row[3] === true || row[3] === 1,
+                room_name: row[4] || '',
+                requester_name: row[5] || '',
+                department: row[6] || '',
+                purpose: row[7] || '',
+                attendee_count: parseInt(row[8]) || 0,
+                status: row[9] || 'รอการอนุมัติ',
+                phone: row[10] || '',
+                created_at: row[11] || new Date().toISOString()
+            }));
+            
+            currentBookings = convertedData;
+            renderTable(convertedData);
+            renderCalendar();
+            refreshChart();
+            
+            syncStatus.textContent = 'Sheet Synced';
+            syncStatus.className = 'text-xs font-bold px-3 py-1.5 rounded-full bg-green-100 text-green-800 uppercase min-w-[90px]';
+            googleSheetConnected = true;
+            showToast(`✅ โหลดข้อมูล ${convertedData.length} รายการจาก Google Sheet`, 'success');
+        } else if (json.success && (!json.data || json.data.length === 0)) {
+            syncStatus.textContent = 'Empty Sheet';
+            syncStatus.className = 'text-xs font-bold px-3 py-1.5 rounded-full bg-yellow-100 text-yellow-800 uppercase min-w-[90px]';
+            showToast('⚠️ Google Sheet ยังไม่มีข้อมูล', 'error');
+        } else {
+            throw new Error(json.message || 'Invalid response');
+        }
+    } catch (err) {
+        console.error('Sheet load error:', err);
+        syncStatus.textContent = 'Error';
+        syncStatus.className = 'text-xs font-bold px-3 py-1.5 rounded-full bg-red-100 text-red-800 uppercase min-w-[90px]';
+        googleSheetConnected = false;
+        showToast(`❌ ข้อผิดพลาด: ${err.message}`, 'error');
+    }
+}
 
 // ===== CONSTANTS =====
 const TH_MONTHS       = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const TH_MONTHS_SHORT = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const TH_DAYS         = ['อา','จ','อ','พ','พฤ','ศ','ส'];
-const HOURS = Array.from({length:17}, (_,i) => `${String(i+6).padStart(2,'0')}:00`); // 06:00 - 22:00
+const HOURS = Array.from({length:17}, (_,i) => `${String(i+6).padStart(2,'0')}:00`);
 
 const rooms = [
     { name:'หอประชุมพุทธรักษา',  cap:500, icon:'fa-landmark',    status:'free'    },
@@ -434,16 +409,7 @@ const rooms = [
     { name:'ห้องประชุมปาริชาติ', cap:20,  icon:'fa-chalkboard',  status:'free'    },
 ];
 
-let bookings = [
-    { id:'BK001', date:'2026-03-05', time:'09:00–12:00', allday:false, room:'ห้องประชุมชวนชม',    name:'นายสมชาย รักเรียน', dept:'ฝ่ายกิจการ',  purpose:'ประชุมผู้ปกครอง',    people:40, status:'อนุมัติแล้ว' },
-    { id:'BK002', date:'2026-03-05', time:'06:00–22:00', allday:true,  room:'หอประชุมพุทธรักษา',  name:'นางวิไล ชมดาว',     dept:'ฝ่ายบริหาร', purpose:'งานวันไหว้ครู',       people:300,status:'อนุมัติแล้ว' },
-    { id:'BK003', date:'2026-03-06', time:'13:00–15:00', allday:false, room:'ห้องประชุมราชพฤกษ์', name:'นายสมศักดิ์ ดีใจ',  dept:'ฝ่ายกิจการ', purpose:'อบรมนักเรียนแกนนำ',  people:25, status:'รอการอนุมัติ' },
-    { id:'BK004', date:'2026-03-07', time:'08:00–10:00', allday:false, room:'ห้องประชุมปาริชาติ', name:'นางสาวมาลี สุขใจ',  dept:'ฝ่ายวิชาการ',purpose:'ประชุมฝ่ายวิชาการ',   people:15, status:'รอการอนุมัติ' },
-    { id:'BK005', date:'2026-03-10', time:'06:00–22:00', allday:true,  room:'หอประชุมพุทธรักษา',  name:'นางเพ็ญศรี แสงดาว', dept:'ฝ่ายบริหาร', purpose:'กีฬาสีประจำปี',       people:400,status:'อนุมัติแล้ว' },
-    { id:'BK006', date:'2026-03-12', time:'10:00–12:00', allday:false, room:'ห้องประชุมชวนชม',    name:'นายอนันต์ พัฒนา',   dept:'ฝ่ายวิชาการ',purpose:'นำเสนอผลงานนักเรียน', people:35, status:'ยกเลิก' },
-];
-
-const getBookedDates = () => [...new Set(bookings.map(b=>b.date))];
+const getBookedDates = () => [...new Set(currentBookings.map(b=>b.booking_date))];
 
 // ===== CALENDAR =====
 let curYear, curMonth;
@@ -498,14 +464,14 @@ function renderTable(data){
     const bCls=s=>s==='อนุมัติแล้ว'?'s-approved':s==='รอการอนุมัติ'?'s-pending':'s-cancel';
     const bIcon=s=>s==='อนุมัติแล้ว'?'check-circle':s==='รอการอนุมัติ'?'hourglass-half':'times-circle';
     tbody.innerHTML=data.map(b=>{
-        const d=new Date(b.date), th=`${d.getDate()} ${TH_MONTHS[d.getMonth()]} ${d.getFullYear()+543}`;
-        const timeBadge = b.allday ? `<span class="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full border border-yellow-300"><i class="fas fa-sun"></i>ทั้งวัน</span>` : `<span class="text-xs text-slate-600 font-bold">${b.time}</span>`;
+        const d=new Date(b.booking_date), th=`${d.getDate()} ${TH_MONTHS[d.getMonth()]} ${d.getFullYear()+543}`;
+        const timeBadge = b.is_allday ? `<span class="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full border border-yellow-300"><i class="fas fa-sun"></i>ทั้งวัน</span>` : `<span class="text-xs text-slate-600 font-bold">${b.booking_time}</span>`;
         return `<tr class="border-b border-blue-50 transition-all">
-            <td class="px-4 py-3"><span class="text-xs font-black px-2 py-1 bg-blue-100 text-blue-700 rounded-lg">${b.id}</span></td>
+            <td class="px-4 py-3"><span class="text-xs font-black px-2 py-1 bg-blue-100 text-blue-700 rounded-lg">${b.booking_id}</span></td>
             <td class="px-4 py-3 text-blue-900 font-bold text-xs">${th}</td>
-            <td class="px-4 py-3 text-blue-900 font-bold text-xs">${b.room}</td>
+            <td class="px-4 py-3 text-blue-900 font-bold text-xs">${b.room_name}</td>
             <td class="px-4 py-3">${timeBadge}</td>
-            <td class="px-4 py-3 text-blue-900 font-bold text-xs">${b.name}<br><span class="text-slate-500 font-normal">${b.dept||''}</span></td>
+            <td class="px-4 py-3 text-blue-900 font-bold text-xs">${b.requester_name}<br><span class="text-slate-500 font-normal">${b.department||''}</span></td>
             <td class="px-4 py-3 text-slate-700 text-xs">${b.purpose}</td>
             <td class="px-4 py-3"><span class="text-xs font-black px-2 py-1 rounded-full ${bCls(b.status)} flex items-center gap-1 w-fit whitespace-nowrap"><i class="fas fa-${bIcon(b.status)}"></i>${b.status}</span></td>
         </tr>`;
@@ -513,35 +479,30 @@ function renderTable(data){
 }
 function filterTable(){
     const date=document.getElementById('filter-date').value, room=document.getElementById('filter-room').value, status=document.getElementById('filter-status').value;
-    let f=bookings;
-    if(date)   f=f.filter(b=>b.date===date);
-    if(room)   f=f.filter(b=>b.room===room);
+    let f=currentBookings;
+    if(date)   f=f.filter(b=>b.booking_date===date);
+    if(room)   f=f.filter(b=>b.room_name===room);
     if(status) f=f.filter(b=>b.status===status);
     renderTable(f);
 }
 function clearFilter(){
     document.getElementById('filter-date').value=''; document.getElementById('filter-room').value=''; document.getElementById('filter-status').value='';
-    document.querySelectorAll('.cal-day').forEach(d=>d.classList.remove('selected')); renderTable(bookings);
+    document.querySelectorAll('.cal-day').forEach(d=>d.classList.remove('selected')); renderTable(currentBookings);
 }
 
 // ===== CHART =====
 let myChart;
 function refreshChart(){
-    const s=document.getElementById('syncStatus');
-    s.textContent='Syncing...'; s.className='text-xs font-bold px-3 py-1.5 rounded-full bg-blue-200 text-blue-800 uppercase animate-pulse min-w-[90px]';
-    setTimeout(()=>{
-        const countMap={}; bookings.forEach(b=>{ countMap[b.date]=(countMap[b.date]||0)+1; });
-        const sorted=Object.entries(countMap).sort(([a],[b])=>a.localeCompare(b));
-        const labels=sorted.map(([date])=>{ const d=new Date(date); return `${d.getDate()} ${TH_MONTHS_SHORT[d.getMonth()]}`; });
-        const values=sorted.map(([,cnt])=>cnt);
-        if(myChart) myChart.destroy();
-        myChart=new Chart(document.getElementById('bookingChart').getContext('2d'),{
-            type:'bar', data:{ labels, datasets:[{ label:'จำนวนการจอง', data:values, backgroundColor:'rgba(0,82,204,0.85)', borderColor:'#0052cc', borderWidth:2, borderRadius:8, maxBarThickness:50 }] },
-            options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
-                scales:{ y:{beginAtZero:true,ticks:{stepSize:1,color:'#1e40af',font:{weight:'bold'}},grid:{color:'rgba(0,82,204,0.08)'}}, x:{grid:{display:false},ticks:{color:'#1e40af',font:{weight:'bold'}}} } }
-        });
-        s.textContent='Live'; s.className='text-xs font-bold px-3 py-1.5 rounded-full bg-green-100 text-green-800 uppercase min-w-[90px]';
-    },600);
+    const countMap={}; currentBookings.forEach(b=>{ countMap[b.booking_date]=(countMap[b.booking_date]||0)+1; });
+    const sorted=Object.entries(countMap).sort(([a],[b])=>a.localeCompare(b));
+    const labels=sorted.map(([date])=>{ const d=new Date(date); return `${d.getDate()} ${TH_MONTHS_SHORT[d.getMonth()]}`; });
+    const values=sorted.map(([,cnt])=>cnt);
+    if(myChart) myChart.destroy();
+    myChart=new Chart(document.getElementById('bookingChart').getContext('2d'),{
+        type:'bar', data:{ labels, datasets:[{ label:'จำนวนการจอง', data:values, backgroundColor:'rgba(0,82,204,0.85)', borderColor:'#0052cc', borderWidth:2, borderRadius:8, maxBarThickness:50 }] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+            scales:{ y:{beginAtZero:true,ticks:{stepSize:1,color:'#1e40af',font:{weight:'bold'}},grid:{color:'rgba(0,82,204,0.08)'}}, x:{grid:{display:false},ticks:{color:'#1e40af',font:{weight:'bold'}}} } }
+    });
 }
 
 // ===== TIME SELECTION =====
@@ -563,7 +524,6 @@ function renderHourGrid(){
         const cell=document.createElement('div');
         cell.className='hour-slot text-center py-2 text-xs font-bold rounded border border-blue-200';
         cell.textContent=h; cell.dataset.idx=i;
-        // apply selection style
         if(selectedStart!==null){
             const lo=Math.min(selectedStart,selectedEnd??selectedStart), hi=Math.max(selectedStart,selectedEnd??selectedStart);
             if(i===lo && i===hi) cell.classList.add('selected-single');
@@ -608,7 +568,7 @@ function getSelectedTime(){
 // ===== BOOKING MODAL =====
 function openBookingModal(){
     document.getElementById('bookingModal').classList.remove('hidden'); document.body.style.overflow='hidden';
-    const id='BK'+String(bookings.length+1).padStart(3,'0');
+    const id='BK'+String(currentBookings.length+1).padStart(3,'0');
     document.getElementById('bookingIdInput').value=id; document.getElementById('bookingIdDisplay').value=id;
     setTimeType('hourly');
 }
@@ -621,79 +581,44 @@ document.getElementById('bookingForm').addEventListener('submit', async e=>{
     e.preventDefault();
     const timeResult = getSelectedTime();
     if(!timeResult){ showToast('❗ กรุณาเลือกช่วงเวลา','error'); return; }
+    
+    if(currentBookings.length >= 999) {
+        showToast('⚠️ ถึงจำนวนการจองสูงสุด (999) กรุณาลบบางรายการ','error');
+        return;
+    }
+
     const btn=document.getElementById('submitBtn'), loader=document.getElementById('btnLoader'), text=document.getElementById('btnText');
     btn.disabled=true; loader.classList.remove('hidden'); text.textContent='กำลังบันทึก...';
 
     const newB={
-        id:      document.getElementById('bookingIdInput').value,
-        date:    document.getElementById('f-date').value,
-        time:    timeResult.time,
-        allday:  timeResult.allday,
-        room:    document.getElementById('f-room').value,
-        name:    document.getElementById('f-name').value,
-        dept:    document.getElementById('f-dept').value,
-        purpose: document.getElementById('f-purpose').value,
-        people:  parseInt(document.getElementById('f-people').value)||1,
-        status:  'รอการอนุมัติ'
+        booking_id:      document.getElementById('bookingIdInput').value,
+        booking_date:    document.getElementById('f-date').value,
+        booking_time:    timeResult.time,
+        is_allday:       timeResult.allday,
+        room_name:       document.getElementById('f-room').value,
+        requester_name:  document.getElementById('f-name').value,
+        department:      document.getElementById('f-dept').value,
+        purpose:         document.getElementById('f-purpose').value,
+        attendee_count:  parseInt(document.getElementById('f-people').value)||1,
+        status:          'รอการอนุมัติ',
+        phone:           document.getElementById('f-tel').value,
+        created_at:      new Date().toISOString()
     };
 
     try {
-        const params = new URLSearchParams({
-            id:      newB.id,
-            date:    newB.date,
-            time:    newB.time,
-            allday:  newB.allday,
-            room:    newB.room,
-            name:    newB.name,
-            dept:    newB.dept || '',
-            purpose: newB.purpose,
-            people:  newB.people,
-            status:  newB.status
-        });
-        await fetch(SCRIPT_URL, { method:'POST', body:params, mode:'no-cors' });
-        bookings.unshift(newB);
-        renderTable(bookings); renderCalendar(); refreshChart();
-        closeBookingModal();
-        showToast('✅ บันทึกลง Google Sheet สำเร็จ! เลขที่: '+newB.id, 'success');
+        const result = await window.dataSdk.create(newB);
+        if(result.isOk) {
+            closeBookingModal();
+            showToast('✅ บันทึกสำเร็จ! เลขที่: '+newB.booking_id, 'success');
+        } else {
+            showToast('❌ เกิดข้อผิดพลาด: ' + result.error, 'error');
+            btn.disabled=false; loader.classList.add('hidden'); text.textContent='ยืนยันการส่งคำร้อง';
+        }
     } catch(err) {
-        // บันทึกในหน้าเว็บก่อน แม้ offline
-        bookings.unshift(newB);
-        renderTable(bookings); renderCalendar(); refreshChart();
-        closeBookingModal();
-        showToast('⚠️ บันทึกเฉพาะหน้าเว็บ (เชื่อมต่อ Sheet ไม่ได้)', 'error');
-    } finally {
+        showToast('❌ เกิดข้อผิดพลาด', 'error');
         btn.disabled=false; loader.classList.add('hidden'); text.textContent='ยืนยันการส่งคำร้อง';
     }
 });
-
-// ===== LOAD FROM GOOGLE SHEET =====
-async function loadFromSheet(){
-    const s=document.getElementById('syncStatus');
-    s.textContent='Loading...'; s.className='text-xs font-bold px-3 py-1.5 rounded-full bg-blue-200 text-blue-800 uppercase animate-pulse min-w-[90px]';
-    try {
-        const res = await fetch(`${SCRIPT_URL}?action=getAll&t=${Date.now()}`);
-        const json = await res.json();
-        if(json.result==='success' && Array.isArray(json.data) && json.data.length){
-            bookings = json.data.map(r=>({
-                id:      r[0]||'',
-                date:    r[1] ? (typeof r[1]==='string' ? r[1] : new Date(r[1]).toISOString().slice(0,10)) : '',
-                time:    r[2]||'',
-                allday:  r[3]==='ทั้งวัน' || r[3]===true,
-                room:    r[4]||'',
-                name:    r[5]||'',
-                dept:    r[6]||'',
-                purpose: r[7]||'',
-                people:  r[8]||0,
-                status:  r[9]||'รอการอนุมัติ'
-            }));
-            renderTable(bookings); renderCalendar();
-            s.textContent='Connected'; s.className='text-xs font-bold px-3 py-1.5 rounded-full bg-green-100 text-green-800 uppercase min-w-[90px]';
-        } else { throw new Error('no data'); }
-    } catch {
-        s.textContent='Local'; s.className='text-xs font-bold px-3 py-1.5 rounded-full bg-yellow-100 text-yellow-800 uppercase min-w-[90px]';
-    }
-    refreshChart();
-}
 
 // ===== ADMIN =====
 function openAdminLogin(){ document.getElementById('adminModal').classList.remove('hidden'); document.body.style.overflow='hidden'; }
@@ -713,7 +638,13 @@ function showToast(msg, type){
 }
 
 // ===== INIT =====
-window.onload=()=>{ initCalendar(); renderRooms(); renderTable(bookings); renderHourGrid(); loadFromSheet(); };
+window.addEventListener('load', () => {
+    initCalendar();
+    renderRooms();
+    renderTable(currentBookings);
+    renderHourGrid();
+    loadFromGoogleSheet(); // Load from Google Sheet on page load
+});
 </script>
-</body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d7733e2568ed33a',t:'MTc3MjY5MzU5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
